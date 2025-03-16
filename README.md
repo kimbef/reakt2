@@ -1,66 +1,85 @@
-# E-Commerce React Application
+# React E-commerce Application
 
-A modern e-commerce application built with React, Redux, and Firebase.
+A modern e-commerce application built with React, TypeScript, Redux Toolkit, and Firebase.
 
 ## Features
 
-- User authentication (Sign up/Sign in)
+- User Authentication (Sign up, Sign in, Profile management)
 - Product catalog with search and filtering
-- Product details page
 - Shopping cart functionality
-- User profile management
-- Protected routes for authenticated users
-- Responsive design using Chakra UI
+- Responsive design with Chakra UI
+- Real-time data synchronization with Firebase
+- State management with Redux Toolkit
 
-## Tech Stack
+## Prerequisites
 
-- React 18 with TypeScript
-- Redux Toolkit for state management
-- Firebase for backend services
-- React Router for navigation
-- Chakra UI for styling
-- Formik & Yup for form handling and validation
+- Node.js (v14 or higher)
+- npm (v6 or higher)
+- Firebase project with Realtime Database and Authentication enabled
+
+## Setup
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <repository-name>
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Create a Firebase project:
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create a new project
+   - Enable Authentication (Email/Password)
+   - Enable Realtime Database
+   - Set up Realtime Database rules:
+   ```json
+   {
+     "rules": {
+       "products": {
+         ".read": true,
+         ".write": "auth != null && auth.token.admin === true"
+       },
+       "carts": {
+         "$uid": {
+           ".read": "$uid === auth.uid",
+           ".write": "$uid === auth.uid"
+         }
+       }
+     }
+   }
+   ```
+
+4. Create a `.env` file in the root directory with your Firebase configuration:
+```
+REACT_APP_FIREBASE_API_KEY=your-api-key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+REACT_APP_FIREBASE_DATABASE_URL=your-database-url
+REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+REACT_APP_FIREBASE_APP_ID=your-app-id
+```
+
+5. Start the development server:
+```bash
+npm run dev
+```
 
 ## Project Structure
 
 ```
 src/
-├── components/     # Reusable UI components
-├── pages/         # Page components
-├── features/      # Feature-specific components and logic
-├── store/         # Redux store configuration and slices
-├── services/      # API and external service integrations
-├── hooks/         # Custom React hooks
-├── utils/         # Utility functions
-├── types/         # TypeScript type definitions
-├── assets/        # Static assets
-└── styles/        # Global styles and theme
-```
-
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a Firebase project and add your configuration to `src/config/firebase.ts`
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
+  ├── components/     # Reusable components
+  ├── config/        # Configuration files
+  ├── hooks/         # Custom hooks
+  ├── pages/         # Page components
+  ├── store/         # Redux store and slices
+  ├── types/         # TypeScript type definitions
+  └── utils/         # Utility functions
 ```
 
 ## Available Scripts
@@ -71,21 +90,14 @@ VITE_FIREBASE_APP_ID=your_app_id
 - `npm run lint` - Run ESLint
 - `npm run test` - Run tests
 
-## Architecture
-
-The application follows a feature-based architecture with the following principles:
-
-- Component-based development
-- State management with Redux
-- Route protection with custom route guards
-- Custom hooks for reusable logic
-- Type safety with TypeScript
-- Responsive design with Chakra UI
-
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

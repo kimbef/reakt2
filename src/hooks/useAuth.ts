@@ -3,23 +3,19 @@ import { useDispatch } from 'react-redux';
 import { auth } from '../config/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { setUser, setLoading } from '../store/slices/authSlice';
+import { fetchCart } from '../store/slices/cartSlice';
+import { AppDispatch } from '../store';
 
 export const useAuth = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     dispatch(setLoading(true));
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      dispatch(setUser(user));
       if (user) {
-        dispatch(
-          setUser({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-          })
-        );
-      } else {
-        dispatch(setUser(null));
+        // Fetch cart data when user logs in
+        dispatch(fetchCart(user.uid));
       }
       dispatch(setLoading(false));
     });
