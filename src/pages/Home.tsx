@@ -32,11 +32,27 @@ const Home: React.FC = () => {
   );
 
   const categories = [
-    { name: 'Electronics', image: 'https://source.unsplash.com/random/400x300/?electronics' },
-    { name: 'Fashion', image: 'https://source.unsplash.com/random/400x300/?fashion' },
-    { name: 'Home & Living', image: 'https://source.unsplash.com/random/400x300/?home' },
-    { name: 'Sports', image: 'https://source.unsplash.com/random/400x300/?sports' },
+    {
+      name: 'Electronics',
+      image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=300&h=200',
+    },
+    {
+      name: 'Gaming',
+      image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?auto=format&fit=crop&q=80&w=300&h=200',
+    },
+    {
+      name: 'Accessories',
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=300&h=200',
+    },
+    {
+      name: 'Home',
+      image: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=300&h=200',
+    },
   ];
+
+  const handleCategoryClick = (categoryName: string) => {
+    navigate('/products', { state: { selectedCategory: categoryName } });
+  };
 
   return (
     <Box>
@@ -49,7 +65,7 @@ const Home: React.FC = () => {
       >
         <Container maxW="container.xl">
           <VStack spacing={6}>
-            <Heading size="2xl">Welcome to E-Shop</Heading>
+            <Heading size="2xl">Welcome to ReaktShop</Heading>
             <Text fontSize="xl" maxW="container.md">
               Discover amazing products at great prices. Shop now and enjoy exclusive deals!
             </Text>
@@ -80,9 +96,10 @@ const Home: React.FC = () => {
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
-                _hover={{ shadow: 'lg' }}
-                onClick={() => navigate(`/product/${product.id}`)}
+                _hover={{ transform: 'translateY(-4px)', shadow: 'lg' }}
+                transition="all 0.3s"
                 cursor="pointer"
+                onClick={() => navigate(`/product/${product.id}`)}
               >
                 <Image
                   src={product.imageUrl}
@@ -108,41 +125,61 @@ const Home: React.FC = () => {
       {/* Categories */}
       <Box bg={useColorModeValue('gray.50', 'gray.900')} py={16}>
         <Container maxW="container.xl">
-          <Heading size="xl" mb={8}>Shop by Category</Heading>
-          <SimpleGrid columns={[1, 2, 4]} spacing={6}>
-            {categories.map(category => (
-              <Box
-                key={category.name}
-                borderRadius="lg"
-                overflow="hidden"
-                position="relative"
-                _hover={{ transform: 'scale(1.02)' }}
-                transition="all 0.2s"
-                cursor="pointer"
-                onClick={() => navigate('/products')}
+          <VStack spacing={12}>
+            <Box width="100%">
+              <Heading
+                textAlign="center"
+                mb={8}
+                size="xl"
               >
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  height="200px"
-                  width="100%"
-                  objectFit="cover"
-                />
-                <Box
-                  position="absolute"
-                  bottom={0}
-                  left={0}
-                  right={0}
-                  bg="blackAlpha.600"
-                  p={4}
-                >
-                  <Text color="white" fontSize="xl" fontWeight="bold">
-                    {category.name}
-                  </Text>
-                </Box>
-              </Box>
-            ))}
-          </SimpleGrid>
+                Shop by Category
+              </Heading>
+              <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
+                {categories.map((category) => (
+                  <Box
+                    key={category.name}
+                    cursor="pointer"
+                    onClick={() => handleCategoryClick(category.name)}
+                    transition="all 0.3s"
+                    _hover={{ transform: 'translateY(-4px)' }}
+                  >
+                    <Box
+                      borderRadius="lg"
+                      overflow="hidden"
+                      boxShadow="md"
+                      position="relative"
+                      height="200px"
+                    >
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        width="100%"
+                        height="100%"
+                        objectFit="cover"
+                      />
+                      <Box
+                        position="absolute"
+                        bottom={0}
+                        left={0}
+                        right={0}
+                        bg="rgba(0, 0, 0, 0.7)"
+                        p={4}
+                      >
+                        <Text
+                          color="white"
+                          fontSize="lg"
+                          fontWeight="bold"
+                          textAlign="center"
+                        >
+                          {category.name}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </SimpleGrid>
+            </Box>
+          </VStack>
         </Container>
       </Box>
     </Box>

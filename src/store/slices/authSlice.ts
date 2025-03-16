@@ -16,7 +16,6 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  isLoading: boolean;
   error: string | null;
 }
 
@@ -24,7 +23,6 @@ interface AuthState {
 const storedUser = localStorage.getItem('user');
 const initialState: AuthState = {
   user: storedUser ? JSON.parse(storedUser) : null,
-  isLoading: true,
   error: null,
 };
 
@@ -86,62 +84,47 @@ const authSlice = createSlice({
         localStorage.removeItem('user');
       }
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(signUp.pending, (state) => {
-        state.isLoading = true;
         state.error = null;
       })
       .addCase(signUp.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.user = action.payload;
       })
       .addCase(signUp.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message || 'Failed to sign up';
       })
       .addCase(signIn.pending, (state) => {
-        state.isLoading = true;
         state.error = null;
       })
       .addCase(signIn.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.user = action.payload;
       })
       .addCase(signIn.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message || 'Failed to sign in';
       })
       .addCase(updateUserProfile.pending, (state) => {
-        state.isLoading = true;
         state.error = null;
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.user = action.payload;
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message || 'Failed to update profile';
       })
       .addCase(logOut.pending, (state) => {
-        state.isLoading = true;
         state.error = null;
       })
       .addCase(logOut.fulfilled, (state) => {
-        state.isLoading = false;
         state.user = null;
       })
       .addCase(logOut.rejected, (state, action) => {
-        state.isLoading = false;
         state.error = action.error.message || 'Failed to log out';
       });
   },
 });
 
-export const { setUser, setLoading } = authSlice.actions;
+export const { setUser } = authSlice.actions;
 export default authSlice.reducer; 

@@ -13,6 +13,9 @@ import {
   Link,
   useToast,
   Heading,
+  Card,
+  CardBody,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { signIn } from '../store/slices/authSlice';
@@ -29,6 +32,9 @@ const SignIn: React.FC = () => {
     password: '',
   });
 
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -42,7 +48,7 @@ const SignIn: React.FC = () => {
       await dispatch(signIn(formData)).unwrap();
       
       // Get the redirect path from location state, or default to '/'
-      const from = (location.state as any)?.from?.pathname || '/';
+      const from = location.state?.from || '/';
       navigate(from, { replace: true });
 
       toast({
@@ -66,55 +72,75 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <Container maxW="container.sm" py={8}>
-      <VStack spacing={8} align="stretch">
-        <Box textAlign="center">
-          <Heading>Sign In</Heading>
-          <Text mt={2} color="gray.600">
-            Don't have an account?{' '}
-            <Link as={RouterLink} to="/signup" color="blue.500">
-              Sign Up
-            </Link>
-          </Text>
-        </Box>
+    <Box>
+      <Container maxW="container.xl" py={8}>
+        <VStack spacing={8} align="center">
+          <Card
+            variant="outline"
+            bg={bgColor}
+            borderColor={borderColor}
+            borderRadius="xl"
+            shadow="md"
+            w={{ base: "full", md: "500px" }}
+          >
+            <CardBody p={8}>
+              <VStack spacing={8} align="stretch">
+                <Box textAlign="center">
+                  <Heading size="xl">Sign In</Heading>
+                  <Text mt={4} color="gray.600" fontSize="lg">
+                    Don't have an account?{' '}
+                    <Link as={RouterLink} to="/signup" color="blue.500">
+                      Sign Up
+                    </Link>
+                  </Text>
+                </Box>
 
-        <Box as="form" onSubmit={handleSubmit}>
-          <VStack spacing={4}>
-            <FormControl isRequired>
-              <FormLabel>Email</FormLabel>
-              <Input
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-              />
-            </FormControl>
+                <Box as="form" onSubmit={handleSubmit}>
+                  <VStack spacing={6}>
+                    <FormControl isRequired>
+                      <FormLabel fontSize="lg">Email</FormLabel>
+                      <Input
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="Enter your email"
+                        size="lg"
+                      />
+                    </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Password</FormLabel>
-              <Input
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-              />
-            </FormControl>
+                    <FormControl isRequired>
+                      <FormLabel fontSize="lg">Password</FormLabel>
+                      <Input
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Enter your password"
+                        size="lg"
+                      />
+                    </FormControl>
 
-            <Button
-              type="submit"
-              colorScheme="blue"
-              width="full"
-              isLoading={isLoading}
-              loadingText="Signing in..."
-            >
-              Sign In
-            </Button>
-          </VStack>
-        </Box>
-      </VStack>
-    </Container>
+                    <Button
+                      type="submit"
+                      colorScheme="blue"
+                      width="full"
+                      isLoading={isLoading}
+                      loadingText="Signing in..."
+                      size="lg"
+                      fontSize="md"
+                      py={6}
+                    >
+                      Sign In
+                    </Button>
+                  </VStack>
+                </Box>
+              </VStack>
+            </CardBody>
+          </Card>
+        </VStack>
+      </Container>
+    </Box>
   );
 };
 

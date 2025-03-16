@@ -3,6 +3,7 @@ import { ref, get, set } from 'firebase/database';
 import { db } from '../../config/firebase';
 import { Product } from './productsSlice';
 import { RootState } from '..';
+import { updateProductStock } from './productsSlice';
 
 export interface CartItem extends Product {
   quantity: number;
@@ -20,7 +21,7 @@ const initialState: CartState = {
   error: null,
 };
 
-// Fetch cart items from Firebase
+// Fetch cart from Firebase
 export const fetchCart = createAsyncThunk(
   'cart/fetchCart',
   async (userId: string) => {
@@ -38,10 +39,31 @@ export const fetchCart = createAsyncThunk(
 // Update cart in Firebase
 export const updateCart = createAsyncThunk(
   'cart/updateCart',
-  async ({ userId, items }: { userId: string; items: CartItem[] }) => {
+  async ({ userId, items }: { userId: string; items: CartItem[] }, { dispatch, getState }) => {
     try {
+      // First, update the cart
       const cartRef = ref(db, `carts/${userId}`);
       await set(cartRef, { items });
+
+      // Then, update the stock for each product
+      const state = getState() as RootState;
+      const currentProducts = state.products.items;
+
+      for (const item of items) {
+        const product = currentProducts.find(p => p.id === item.id);
+        if (product) {
+          const currentCartItem = state.cart.items.find(i => i.id === item.id);
+          const quantityDiff = item.quantity - (currentCartItem?.quantity || 0);
+          const newStock = product.stock - quantityDiff;
+          
+          // Update product stock in Firebase
+          await dispatch(updateProductStock({ 
+            productId: item.id, 
+            newStock: Math.max(0, newStock)
+          })).unwrap();
+        }
+      }
+
       return items;
     } catch (error) {
       console.error('Error updating cart:', error);

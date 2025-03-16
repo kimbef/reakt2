@@ -15,7 +15,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
-import Cart from './pages/Cart';
+import Cart from './pages/Cart.tsx';
 import Profile from './pages/Profile';
 import AdminProducts from './pages/AdminProducts';
 

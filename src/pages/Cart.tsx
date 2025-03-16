@@ -2,29 +2,33 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
-  Container,
-  VStack,
-  HStack,
+  Grid,
   Text,
   Button,
   Image,
-  Heading,
+  VStack,
+  HStack,
   IconButton,
-  Divider,
   useToast,
+  useColorModeValue,
+  Badge,
 } from '@chakra-ui/react';
 import { AddIcon, MinusIcon, DeleteIcon } from '@chakra-ui/icons';
 import { RootState, AppDispatch } from '../store';
-import { selectCartItems, selectCartTotal, updateCart, CartItem } from '../store/slices/cartSlice';
+import { selectCartItems, selectCartTotal, updateCart } from '../store/slices/cartSlice';
 import { Link as RouterLink } from 'react-router-dom';
-import { User } from 'firebase/auth';
+import { FaShoppingBag } from 'react-icons/fa';
 
 const Cart: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
-  const user = useSelector((state: RootState) => state.auth.user) as User | null;
+  const user = useSelector((state: RootState) => state.auth.user);
   const toast = useToast();
+
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const cardHoverBg = useColorModeValue('gray.50', 'gray.700');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   const handleUpdateQuantity = async (productId: string, newQuantity: number) => {
     if (!user) return;
@@ -51,88 +55,160 @@ const Cart: React.FC = () => {
 
   if (!cartItems.length) {
     return (
-      <Container maxW="container.lg" py={8}>
-        <VStack spacing={8} align="center">
-          <Heading>Your Cart is Empty</Heading>
-          <Text>Add some products to your cart to get started!</Text>
-          <Button as={RouterLink} to="/products" colorScheme="blue">
+      <VStack spacing={8} align="center" w="full">
+        <Box
+          bg={cardBg}
+          borderRadius="lg"
+          overflow="hidden"
+          shadow="md"
+          borderWidth="1px"
+          borderColor={borderColor}
+          p={8}
+          textAlign="center"
+          w={{ base: "full", md: "600px" }}
+          transition="all 0.3s"
+          _hover={{ transform: 'translateY(-4px)', shadow: 'lg' }}
+        >
+          <FaShoppingBag size="80px" style={{ margin: '0 auto', opacity: 0.3 }} />
+          <Text fontSize="2xl" fontWeight="bold" mt={6}>Your Cart is Empty</Text>
+          <Text color="gray.500" mt={4}>Add some products to your cart to get started!</Text>
+          <Button
+            as={RouterLink}
+            to="/products"
+            colorScheme="blue"
+            size="lg"
+            mt={8}
+            leftIcon={<FaShoppingBag />}
+            _hover={{
+              transform: 'translateY(-2px)',
+              shadow: 'lg',
+            }}
+          >
             Browse Products
           </Button>
-        </VStack>
-      </Container>
+        </Box>
+      </VStack>
     );
   }
 
   return (
-    <Container maxW="container.lg" py={8}>
-      <VStack spacing={8} align="stretch">
-        <Heading>Shopping Cart</Heading>
+    <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={8} w="full">
+      <VStack align="stretch" spacing={6}>
+        <Text fontSize="2xl" fontWeight="bold">Shopping Cart ({cartItems.length} items)</Text>
         
-        <Box>
-          {cartItems.map((item) => (
-            <Box key={item.id} mb={4}>
-              <HStack spacing={4} align="center">
-                <Image
-                  src={item.imageUrl}
-                  alt={item.name}
-                  boxSize="100px"
-                  objectFit="cover"
-                  borderRadius="md"
+        {cartItems.map((item) => (
+          <Box
+            key={item.id}
+            bg={cardBg}
+            borderRadius="lg"
+            overflow="hidden"
+            shadow="md"
+            borderWidth="1px"
+            borderColor={borderColor}
+            transition="all 0.3s"
+            _hover={{ transform: 'translateY(-2px)', shadow: 'lg', bg: cardHoverBg }}
+          >
+            <Grid templateColumns={{ base: '1fr', sm: '150px 1fr auto auto' }} gap={6} p={4}>
+              <Image
+                src={item.imageUrl}
+                alt={item.name}
+                height="150px"
+                width="150px"
+                objectFit="cover"
+                borderRadius="md"
+              />
+              
+              <VStack align="start" spacing={2}>
+                <Text fontSize="xl" fontWeight="bold">
+                  {item.name}
+                </Text>
+                <Badge colorScheme="green" px={2} py={1} borderRadius="full">
+                  In Stock
+                </Badge>
+                <Text color="gray.500">
+                  ${item.price.toFixed(2)}
+                </Text>
+              </VStack>
+
+              <HStack spacing={2}>
+                <IconButton
+                  aria-label="Decrease quantity"
+                  icon={<MinusIcon />}
+                  onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                  colorScheme="blue"
+                  variant="outline"
+                  size="sm"
                 />
-                
-                <VStack flex={1} align="start" spacing={1}>
-                  <Text fontSize="lg" fontWeight="semibold">
-                    {item.name}
-                  </Text>
-                  <Text color="gray.600">
-                    ${item.price.toFixed(2)}
-                  </Text>
-                </VStack>
+                <Text px={3}>{item.quantity}</Text>
+                <IconButton
+                  aria-label="Increase quantity"
+                  icon={<AddIcon />}
+                  onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                  colorScheme="blue"
+                  variant="outline"
+                  size="sm"
+                />
+              </HStack>
 
-                <HStack>
-                  <IconButton
-                    aria-label="Decrease quantity"
-                    icon={<MinusIcon />}
-                    size="sm"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                  />
-                  <Text px={4}>{item.quantity}</Text>
-                  <IconButton
-                    aria-label="Increase quantity"
-                    icon={<AddIcon />}
-                    size="sm"
-                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                  />
-                  <IconButton
-                    aria-label="Remove item"
-                    icon={<DeleteIcon />}
-                    size="sm"
-                    colorScheme="red"
-                    onClick={() => handleUpdateQuantity(item.id, 0)}
-                  />
-                </HStack>
-
-                <Text fontWeight="semibold">
+              <VStack align="end" spacing={2}>
+                <Text
+                  fontSize="xl"
+                  fontWeight="bold"
+                  color={useColorModeValue('blue.600', 'blue.300')}
+                >
                   ${(item.price * item.quantity).toFixed(2)}
                 </Text>
-              </HStack>
-              <Divider mt={4} />
-            </Box>
-          ))}
-        </Box>
+                <IconButton
+                  aria-label="Remove item"
+                  icon={<DeleteIcon />}
+                  onClick={() => handleUpdateQuantity(item.id, 0)}
+                  colorScheme="red"
+                  variant="ghost"
+                  size="sm"
+                />
+              </VStack>
+            </Grid>
+          </Box>
+        ))}
+      </VStack>
 
-        <Box borderWidth={1} p={4} borderRadius="lg" bg="gray.50">
-          <HStack justify="space-between">
-            <Text fontSize="lg">Total:</Text>
-            <Text fontSize="xl" fontWeight="bold">
-              ${cartTotal.toFixed(2)}
-            </Text>
-          </HStack>
+      <Box
+        bg={cardBg}
+        borderRadius="lg"
+        overflow="hidden"
+        shadow="md"
+        borderWidth="1px"
+        borderColor={borderColor}
+        p={6}
+        height="fit-content"
+        position="sticky"
+        top="100px"
+        transition="all 0.3s"
+        _hover={{ shadow: 'lg' }}
+      >
+        <VStack spacing={6} align="stretch">
+          <Text fontSize="2xl" fontWeight="bold">Order Summary</Text>
+          <Grid templateColumns="1fr auto" gap={4}>
+            <Text color="gray.500">Subtotal</Text>
+            <Text fontWeight="semibold">${cartTotal.toFixed(2)}</Text>
+            <Text color="gray.500">Shipping</Text>
+            <Text fontWeight="semibold">Free</Text>
+          </Grid>
+          <Box pt={6} borderTopWidth={1} borderColor={borderColor}>
+            <Grid templateColumns="1fr auto" gap={4}>
+              <Text fontSize="xl" fontWeight="bold">Total</Text>
+              <Text
+                fontSize="xl"
+                fontWeight="bold"
+                color={useColorModeValue('blue.600', 'blue.300')}
+              >
+                ${cartTotal.toFixed(2)}
+              </Text>
+            </Grid>
+          </Box>
           <Button
             colorScheme="blue"
             size="lg"
-            width="full"
-            mt={4}
             onClick={() => {
               toast({
                 title: 'Coming Soon',
@@ -142,12 +218,16 @@ const Cart: React.FC = () => {
                 isClosable: true,
               });
             }}
+            _hover={{
+              transform: 'translateY(-2px)',
+              shadow: 'lg',
+            }}
           >
             Proceed to Checkout
           </Button>
-        </Box>
-      </VStack>
-    </Container>
+        </VStack>
+      </Box>
+    </Grid>
   );
 };
 

@@ -132,6 +132,28 @@ export const createProduct = createAsyncThunk(
   }
 );
 
+export const updateProductStock = createAsyncThunk(
+  'products/updateProductStock',
+  async ({ productId, newStock }: { productId: string; newStock: number }) => {
+    try {
+      const productRef = ref(db, `products/${productId}`);
+      const snapshot = await get(productRef);
+      
+      if (!snapshot.exists()) {
+        throw new Error('Product not found');
+      }
+      
+      const product = snapshot.val();
+      const updatedProduct = { ...product, stock: newStock };
+      await set(productRef, updatedProduct);
+      return updatedProduct;
+    } catch (error) {
+      console.error('Error updating product stock:', error);
+      throw error;
+    }
+  }
+);
+
 const productsSlice = createSlice({
   name: 'products',
   initialState,
@@ -185,6 +207,24 @@ const productsSlice = createSlice({
       .addCase(createProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Failed to create product';
+      })
+      .addCase(updateProductStock.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProductStock.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.items.findIndex(item => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        if (state.selectedProduct?.id === action.payload.id) {
+          state.selectedProduct = action.payload;
+        }
+      })
+      .addCase(updateProductStock.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to update product stock';
       });
   },
 });

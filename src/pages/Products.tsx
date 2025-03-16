@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Grid,
@@ -27,6 +27,7 @@ import { updateCart, selectCartItems } from '../store/slices/cartSlice';
 const Products: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
   const cartItems = useSelector(selectCartItems);
@@ -41,28 +42,58 @@ const Products: React.FC = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    // Set the category from navigation state if available
+    const categoryFromNav = (location.state as any)?.selectedCategory;
+    if (categoryFromNav) {
+      setSelectedCategory(categoryFromNav);
+      // Clear the navigation state to avoid persisting the filter
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, navigate]);
+
   const handleAddToCart = (product: Product) => {
-    if (user) {
-      const existingItem = cartItems.find(item => item.id === product.id);
-      const updatedItems = existingItem
-        ? cartItems.map(item =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...cartItems, { ...product, quantity: 1 }];
-      
-      dispatch(updateCart({ userId: user.uid, items: updatedItems }));
+    if (!user) {
       toast({
-        title: 'Added to cart',
-        description: `${product.name} has been added to your cart`,
-        status: 'success',
-        duration: 2000,
+        title: 'Authentication Required',
+        description: 'Please sign in to add items to your cart',
+        status: 'info',
+        duration: 3000,
         isClosable: true,
       });
-    } else {
-      navigate('/signin');
+      navigate('/signin', { state: { from: location.pathname } });
+      return;
     }
+
+    const existingItem = cartItems.find(item => item.id === product.id);
+    const updatedItems = existingItem
+      ? cartItems.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      : [...cartItems, { ...product, quantity: 1 }];
+    
+    dispatch(updateCart({ userId: user.uid, items: updatedItems }))
+      .unwrap()
+      .then(() => {
+        toast({
+          title: 'Added to cart',
+          description: `${product.name} has been added to your cart`,
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      })
+      .catch(() => {
+        toast({
+          title: 'Error',
+          description: 'Failed to add item to cart',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   const categories = [...new Set(products.map(product => product.category))];
