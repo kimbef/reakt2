@@ -1,28 +1,50 @@
-import React from 'react';
-import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Text,
+  Link,
+  useToast,
+  Heading,
+} from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebase';
-import { useNavigate } from 'react-router-dom';
-
-const validationSchema = Yup.object({
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-});
+import { signIn } from '../store/slices/authSlice';
+import { AppDispatch } from '../store';
 
 const SignIn: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
 
-  const handleSubmit = async (values: { email: string; password: string }, { setSubmitting }: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
+      await dispatch(signIn(formData)).unwrap();
+      
+      // Get the redirect path from location state, or default to '/'
+      const from = (location.state as any)?.from?.pathname || '/';
+      navigate(from, { replace: true });
+
       toast({
         title: 'Success',
         description: 'You have successfully signed in',
@@ -30,71 +52,69 @@ const SignIn: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate('/');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to sign in',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     } finally {
-      setSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg">
-      <Text fontSize="2xl" mb={6} textAlign="center">Sign In</Text>
-      <Formik
-        initialValues={{ email: '', password: '' }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting, errors, touched }) => (
-          <Form>
-            <VStack spacing={4}>
-              <FormControl isInvalid={!!errors.email && touched.email}>
-                <FormLabel>Email</FormLabel>
-                <Field
-                  as={Input}
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                />
-                <Text color="red.500" fontSize="sm">{errors.email}</Text>
-              </FormControl>
+    <Container maxW="container.sm" py={8}>
+      <VStack spacing={8} align="stretch">
+        <Box textAlign="center">
+          <Heading>Sign In</Heading>
+          <Text mt={2} color="gray.600">
+            Don't have an account?{' '}
+            <Link as={RouterLink} to="/signup" color="blue.500">
+              Sign Up
+            </Link>
+          </Text>
+        </Box>
 
-              <FormControl isInvalid={!!errors.password && touched.password}>
-                <FormLabel>Password</FormLabel>
-                <Field
-                  as={Input}
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                />
-                <Text color="red.500" fontSize="sm">{errors.password}</Text>
-              </FormControl>
+        <Box as="form" onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+              />
+            </FormControl>
 
-              <Button
-                type="submit"
-                colorScheme="blue"
-                width="full"
-                isLoading={isSubmitting}
-              >
-                Sign In
-              </Button>
+            <FormControl isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
+            </FormControl>
 
-              <Text>
-                Don't have an account?{' '}
-                <RouterLink to="/signup">Sign Up</RouterLink>
-              </Text>
-            </VStack>
-          </Form>
-        )}
-      </Formik>
-    </Box>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              width="full"
+              isLoading={isLoading}
+              loadingText="Signing in..."
+            >
+              Sign In
+            </Button>
+          </VStack>
+        </Box>
+      </VStack>
+    </Container>
   );
 };
 

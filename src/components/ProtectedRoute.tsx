@@ -1,17 +1,24 @@
-import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 
 interface ProtectedRouteProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user } = useSelector((state: RootState) => state.auth);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const user = useSelector((state: RootState) => state.auth.user);
+  const isLoading = useSelector((state: RootState) => state.auth.isLoading);
+  const location = useLocation();
+
+  if (isLoading) {
+    return null; // or a loading spinner
+  }
 
   if (!user) {
-    return <Navigate to="/signin" replace />;
+    // Save the attempted URL for redirecting after login
+    return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

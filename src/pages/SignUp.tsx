@@ -1,46 +1,64 @@
-import React from 'react';
-import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from '@chakra-ui/react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
-const validationSchema = Yup.object({
-  name: Yup.string()
-    .min(2, 'Name must be at least 2 characters')
-    .required('Name is required'),
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Confirm password is required'),
-});
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Text,
+  Link,
+  useToast,
+  Heading,
+} from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
+import { signUp } from '../store/slices/authSlice';
+import { AppDispatch } from '../store';
 
 const SignUp: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    displayName: '',
+  });
 
-  const handleSubmit = async (
-    values: { name: string; email: string; password: string },
-    { setSubmitting }: any
-  ) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        values.email,
-        values.password
-      );
-      
-      await updateProfile(userCredential.user, {
-        displayName: values.name,
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
       });
+      return;
+    }
 
+    setIsLoading(true);
+
+    try {
+      await dispatch(signUp({ 
+        email: formData.email, 
+        password: formData.password,
+        displayName: formData.displayName 
+      })).unwrap();
+      navigate('/');
+      
       toast({
         title: 'Success',
         description: 'Account created successfully',
@@ -48,92 +66,91 @@ const SignUp: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
-      navigate('/');
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to create account',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     } finally {
-      setSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg">
-      <Text fontSize="2xl" mb={6} textAlign="center">Sign Up</Text>
-      <Formik
-        initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting, errors, touched }) => (
-          <Form>
-            <VStack spacing={4}>
-              <FormControl isInvalid={!!errors.name && touched.name}>
-                <FormLabel>Name</FormLabel>
-                <Field
-                  as={Input}
-                  name="name"
-                  placeholder="Enter your name"
-                />
-                <Text color="red.500" fontSize="sm">{errors.name}</Text>
-              </FormControl>
+    <Container maxW="container.sm" py={8}>
+      <VStack spacing={8} align="stretch">
+        <Box textAlign="center">
+          <Heading>Create Account</Heading>
+          <Text mt={2} color="gray.600">
+            Already have an account?{' '}
+            <Link as={RouterLink} to="/signin" color="blue.500">
+              Sign In
+            </Link>
+          </Text>
+        </Box>
 
-              <FormControl isInvalid={!!errors.email && touched.email}>
-                <FormLabel>Email</FormLabel>
-                <Field
-                  as={Input}
-                  name="email"
-                  type="email"
-                  placeholder="Enter your email"
-                />
-                <Text color="red.500" fontSize="sm">{errors.email}</Text>
-              </FormControl>
+        <Box as="form" onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Name</FormLabel>
+              <Input
+                name="displayName"
+                type="text"
+                value={formData.displayName}
+                onChange={handleChange}
+                placeholder="Enter your name"
+              />
+            </FormControl>
 
-              <FormControl isInvalid={!!errors.password && touched.password}>
-                <FormLabel>Password</FormLabel>
-                <Field
-                  as={Input}
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                />
-                <Text color="red.500" fontSize="sm">{errors.password}</Text>
-              </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+              />
+            </FormControl>
 
-              <FormControl isInvalid={!!errors.confirmPassword && touched.confirmPassword}>
-                <FormLabel>Confirm Password</FormLabel>
-                <Field
-                  as={Input}
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                />
-                <Text color="red.500" fontSize="sm">{errors.confirmPassword}</Text>
-              </FormControl>
+            <FormControl isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+              />
+            </FormControl>
 
-              <Button
-                type="submit"
-                colorScheme="blue"
-                width="full"
-                isLoading={isSubmitting}
-              >
-                Sign Up
-              </Button>
+            <FormControl isRequired>
+              <FormLabel>Confirm Password</FormLabel>
+              <Input
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+              />
+            </FormControl>
 
-              <Text>
-                Already have an account?{' '}
-                <RouterLink to="/signin">Sign In</RouterLink>
-              </Text>
-            </VStack>
-          </Form>
-        )}
-      </Formik>
-    </Box>
+            <Button
+              type="submit"
+              colorScheme="blue"
+              width="full"
+              isLoading={isLoading}
+              loadingText="Creating account..."
+            >
+              Sign Up
+            </Button>
+          </VStack>
+        </Box>
+      </VStack>
+    </Container>
   );
 };
 
