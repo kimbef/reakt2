@@ -39,7 +39,6 @@ const ProductDetails: React.FC = () => {
   );
 
   const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   useEffect(() => {
     if (id) {
