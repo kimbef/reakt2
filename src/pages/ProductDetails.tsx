@@ -20,7 +20,7 @@ import {
   Divider,
   Grid,
 } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { FaShoppingCart } from 'react-icons/fa';
 import { AppDispatch, RootState } from '../store';
 import { fetchProductById } from '../store/slices/productsSlice';
