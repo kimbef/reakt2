@@ -8,6 +8,8 @@ import PublicRoute from './components/PublicRoute';
 import Layout from './components/Layout';
 import { initializeProducts } from './store/slices/productsSlice';
 import { AppDispatch } from './store';
+import CustomCursor from './components/CustomCursor';
+import './assets/customStyles.css';
 
 // Pages
 import Home from './pages/Home';
@@ -90,6 +92,7 @@ function App() {
     <Provider store={store}>
       <ChakraProvider>
         <Router>
+          <CustomCursor />
           <AppContent />
         </Router>
       </ChakraProvider>

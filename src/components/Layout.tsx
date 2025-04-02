@@ -5,7 +5,7 @@ import Footer from './Footer';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <Box minH="100vh" display="flex" flexDirection="column" bg="gray.50" _dark={{ bg: 'gray.900' }} w="100vw">
+    <Box minH="100vh" display="flex" flexDirection="column" w="100vw">
       <Navigation />
       <Box flex="1" w="full">
         <Box maxW="container.xl" mx="auto" px={4} py={8}>

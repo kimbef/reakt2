@@ -26,10 +26,7 @@ const Home: React.FC = () => {
   }, [dispatch]);
 
   const featuredProducts = products.slice(0, 4);
-  const bgGradient = useColorModeValue(
-    'linear(to-r, blue.100, purple.100)',
-    'linear(to-r, blue.900, purple.900)'
-  );
+  const isLightMode = useColorModeValue(true, false);
 
   const categories = [
     {
@@ -58,75 +55,91 @@ const Home: React.FC = () => {
     <Box>
       {/* Hero Section */}
       <Box
-        bgGradient={bgGradient}
+        className="animated-gradient-bg"
         py={20}
         px={4}
-        textAlign="center"
+        
       >
-        <Container maxW="container.xl">
-          <VStack spacing={6}>
-            <Heading size="2xl">Welcome to ReaktShop</Heading>
-            <Text fontSize="xl" maxW="container.md">
-              Discover amazing products at great prices. Shop now and enjoy exclusive deals!
-            </Text>
-            <Button
-              colorScheme="blue"
-              size="lg"
-              onClick={() => navigate('/products')}
-            >
-              Shop Now
-            </Button>
-          </VStack>
-        </Container>
+        <Box
+          className={isLightMode ? "hero-glass-effect" : "dark-hero-glass-effect"}
+          borderRadius="lg"
+          m={{ base: 4, md: 8 }}
+          p={8}
+          textAlign="center"
+        >
+          <Container maxW="container.xl">
+            <VStack spacing={6}>
+              <Heading size="2xl" className="hero-gradient-text">
+                Welcome to ReaktShop
+              </Heading>
+              <Text fontSize="xl" maxW="container.md" className="hero-gradient-text">
+                Discover amazing products at great prices. Shop now and enjoy exclusive deals!
+              </Text>
+              <Button
+                colorScheme="blue"
+                size="lg"
+                onClick={() => navigate('/products')}
+                className="neon-button-blue glass-effect"
+                _hover={{ transform: 'scale(1.05)' }}
+              >
+                Shop Now
+              </Button>
+            </VStack>
+          </Container>
+        </Box>
       </Box>
 
       {/* Featured Products */}
       <Container maxW="container.xl" py={16}>
-        <Heading size="xl" mb={8}>Featured Products</Heading>
-        {isLoading ? (
-          <Text>Loading products...</Text>
-        ) : (
-          <Grid
-            templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(4, 1fr)']}
-            gap={6}
-          >
-            {featuredProducts.map(product => (
-              <Box
-                key={product.id}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                _hover={{ transform: 'translateY(-4px)', shadow: 'lg' }}
-                transition="all 0.3s"
-                cursor="pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  height="200px"
-                  width="100%"
-                  objectFit="cover"
-                />
-                <Box p={4}>
-                  <Text fontSize="xl" fontWeight="semibold" mb={2}>
-                    {product.name}
-                  </Text>
-                  <Text color="blue.600" fontSize="lg" fontWeight="bold">
-                    ${product.price}
-                  </Text>
+        <Box 
+          className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+          p={6}
+          borderRadius="lg"
+        >
+          <Heading size="xl" mb={8}>Featured Products</Heading>
+          {isLoading ? (
+            <Text>Loading products...</Text>
+          ) : (
+            <Grid
+              templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(4, 1fr)']}
+              gap={6}
+            >
+              {featuredProducts.map(product => (
+                <Box
+                  key={product.id}
+                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  borderRadius="lg"
+                  overflow="hidden"
+                  cursor="pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                >
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    height="200px"
+                    width="100%"
+                    objectFit="cover"
+                  />
+                  <Box p={4}>
+                    <Text fontSize="xl" fontWeight="semibold" mb={2}>
+                      {product.name}
+                    </Text>
+                    <Text color="blue.600" fontSize="lg" fontWeight="bold">
+                      ${product.price}
+                    </Text>
+                  </Box>
                 </Box>
-              </Box>
-            ))}
-          </Grid>
-        )}
+              ))}
+            </Grid>
+          )}
+        </Box>
       </Container>
 
       {/* Categories */}
-      <Box bg={useColorModeValue('gray.50', 'gray.900')} py={16}>
+      <Box py={16}>
         <Container maxW="container.xl">
           <VStack spacing={12}>
-            <Box width="100%">
+            <Box width="100%" className={isLightMode ? "glass-effect" : "dark-glass-effect"} p={6} borderRadius="lg">
               <Heading
                 textAlign="center"
                 mb={8}
@@ -141,12 +154,12 @@ const Home: React.FC = () => {
                     cursor="pointer"
                     onClick={() => handleCategoryClick(category.name)}
                     transition="all 0.3s"
-                    _hover={{ transform: 'translateY(-4px)' }}
+                    _hover={{ transform: 'translateY(-4px) scale(1.03)' }}
                   >
                     <Box
                       borderRadius="lg"
                       overflow="hidden"
-                      boxShadow="md"
+                      className={isLightMode ? "glass-card" : "dark-glass-card"}
                       position="relative"
                       height="200px"
                     >
@@ -162,11 +175,11 @@ const Home: React.FC = () => {
                         bottom={0}
                         left={0}
                         right={0}
-                        bg="rgba(0, 0, 0, 0.7)"
+                        className={isLightMode ? "glass-effect" : "dark-glass-effect"}
                         p={4}
                       >
                         <Text
-                          color="white"
+                          color={isLightMode ? "black" : "white"}
                           fontSize="lg"
                           fontWeight="bold"
                           textAlign="center"

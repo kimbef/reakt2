@@ -58,8 +58,7 @@ const Navigation: React.FC = () => {
   const cartItems = useSelector(selectCartItems);
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const isLightMode = useColorModeValue(true, false);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -101,14 +100,11 @@ const Navigation: React.FC = () => {
 
   return (
     <Box
-      bg={bgColor}
+      className="navbar-gradient"
       position="sticky"
       top={0}
       zIndex={1000}
-      borderBottom="1px"
-      borderStyle="solid"
-      borderColor={borderColor}
-      shadow="sm"
+      shadow="md"
       width="full"
     >
       <Flex h={16} alignItems="center" justifyContent="space-between" maxW="container.xl" mx="auto" px={4}>
@@ -118,14 +114,16 @@ const Navigation: React.FC = () => {
           aria-label="Open Menu"
           display={{ md: 'none' }}
           onClick={onToggle}
+          variant="ghost"
+          color="white"
+          _hover={{ bg: 'rgba(255, 255, 255, 0.1)' }}
         />
 
         <HStack spacing={8} alignItems="center">
           <Text
             fontSize="2xl"
             fontWeight="bold"
-            bgGradient="linear(to-r, blue.400, teal.400)"
-            bgClip="text"
+            color="white"
             cursor="pointer"
             onClick={() => navigate('/')}
           >
@@ -140,11 +138,12 @@ const Navigation: React.FC = () => {
                 px={2}
                 py={1}
                 rounded="md"
+                color="white"
                 _hover={{
                   textDecoration: 'none',
-                  bg: useColorModeValue('gray.100', 'gray.700'),
+                  bg: 'rgba(255, 255, 255, 0.1)',
                 }}
-                bg={isActive(link.path) ? useColorModeValue('gray.100', 'gray.700') : 'transparent'}
+                bg={isActive(link.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent'}
                 fontWeight={isActive(link.path) ? 'semibold' : 'normal'}
               >
                 {link.name}
@@ -159,6 +158,8 @@ const Navigation: React.FC = () => {
             icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
             onClick={toggleColorMode}
             variant="ghost"
+            color="white"
+            _hover={{ bg: 'rgba(255, 255, 255, 0.1)' }}
           />
 
           {user ? (
@@ -169,7 +170,7 @@ const Navigation: React.FC = () => {
                 aria-label="Shopping cart"
                 icon={
                   <Box position="relative">
-                    <FaShoppingCart />
+                    <FaShoppingCart color="white" />
                     {cartItemCount > 0 && (
                       <Badge
                         position="absolute"
@@ -186,13 +187,14 @@ const Navigation: React.FC = () => {
                   </Box>
                 }
                 variant="ghost"
+                _hover={{ bg: 'rgba(255, 255, 255, 0.1)' }}
               />
 
               <Menu>
                 <MenuButton>
                   <Avatar size="sm" name={user.displayName || undefined} />
                 </MenuButton>
-                <MenuList>
+                <MenuList className={isLightMode ? "glass-effect" : "dark-glass-effect"}>
                   <MenuItem as={RouterLink} to="/profile">
                     <FaUser />
                     <Text ml={2}>Profile</Text>
@@ -210,10 +212,23 @@ const Navigation: React.FC = () => {
             </>
           ) : (
             <ButtonGroup spacing={2}>
-              <Button as={RouterLink} to="/signin" variant="ghost">
+              <Button 
+                as={RouterLink} 
+                to="/signin" 
+                variant="ghost" 
+                color="white"
+                _hover={{ bg: 'rgba(255, 255, 255, 0.1)' }}
+              >
                 Sign In
               </Button>
-              <Button as={RouterLink} to="/signup" colorScheme="blue">
+              <Button 
+                as={RouterLink} 
+                to="/signup" 
+                className="neon-button-blue"
+                variant="outline"
+                borderColor="white"
+                color="white"
+              >
                 Sign Up
               </Button>
             </ButtonGroup>
@@ -223,7 +238,7 @@ const Navigation: React.FC = () => {
 
       <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent className={isLightMode ? "glass-effect" : "dark-glass-effect"}>
           <DrawerCloseButton />
           <DrawerHeader>Menu</DrawerHeader>
           <DrawerBody>

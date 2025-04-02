@@ -17,6 +17,8 @@ import {
   Tag,
   useColorModeValue,
   Skeleton,
+  Container,
+  Heading,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { FaShoppingCart } from 'react-icons/fa';
@@ -35,8 +37,7 @@ const Products: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const cardHoverBg = useColorModeValue('gray.50', 'gray.700');
+  const isLightMode = useColorModeValue(true, false);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -114,143 +115,161 @@ const Products: React.FC = () => {
   }
 
   return (
-    <Box>
-      <VStack spacing={6} mb={8}>
-        <HStack w="full" spacing={4} flexWrap={{ base: "wrap", md: "nowrap" }}>
-          <InputGroup flex={1}>
-            <InputLeftElement pointerEvents="none">
-              <SearchIcon color="gray.400" />
-            </InputLeftElement>
-            <Input
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              borderRadius="full"
-            />
-          </InputGroup>
-          <Select
-            placeholder="All Categories"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            borderRadius="full"
-            minW={{ base: "full", md: "200px" }}
-          >
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </Select>
-        </HStack>
-      </VStack>
+    <Box className="animated-gradient-bg" minH="100vh" pb={10}>
+      <Container maxW="container.xl" pt={6}>
+        <Box 
+          className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+          p={6} 
+          borderRadius="lg" 
+          mb={8}
+        >
+          <Heading size="xl" mb={6} textAlign="center">All Products</Heading>
+          <VStack spacing={6}>
+            <HStack w="full" spacing={4} flexWrap={{ base: "wrap", md: "nowrap" }}>
+              <InputGroup flex={1}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.400" />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  borderRadius="full"
+                  bg={isLightMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)"}
+                  _hover={{ bg: isLightMode ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)" }}
+                  _focus={{ bg: isLightMode ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.4)" }}
+                />
+              </InputGroup>
+              <Select
+                placeholder="All Categories"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                borderRadius="full"
+                minW={{ base: "full", md: "200px" }}
+                bg={isLightMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)"}
+                _hover={{ bg: isLightMode ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.3)" }}
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </Select>
+            </HStack>
+          </VStack>
+        </Box>
 
-      <Grid
-        templateColumns={{
-          base: 'repeat(1, 1fr)',
-          sm: 'repeat(2, 1fr)',
-          md: 'repeat(3, 1fr)',
-          lg: 'repeat(4, 1fr)'
-        }}
-        gap={6}
-      >
-        {isLoading
-          ? Array(8).fill(0).map((_, i) => (
-              <Box
-                key={i}
-                bg={cardBg}
-                borderRadius="lg"
-                overflow="hidden"
-                shadow="md"
-              >
-                <Skeleton height="200px" />
-                <VStack p={4} spacing={3}>
-                  <Skeleton height="20px" width="80%" />
-                  <Skeleton height="20px" width="60%" />
-                  <Skeleton height="20px" width="40%" />
-                </VStack>
-              </Box>
-            ))
-          : filteredProducts.map(product => (
-              <Box
-                key={product.id}
-                bg={cardBg}
-                borderRadius="lg"
-                overflow="hidden"
-                shadow="md"
-                transition="all 0.3s"
-                _hover={{
-                  transform: 'translateY(-4px)',
-                  shadow: 'lg',
-                  bg: cardHoverBg,
-                }}
-              >
-                <Box position="relative">
-                  <Image
-                    src={product.imageUrl}
-                    alt={product.name}
-                    height="200px"
-                    width="100%"
-                    objectFit="cover"
-                    onClick={() => navigate(`/product/${product.id}`)}
-                    cursor="pointer"
-                  />
-                  <Tag
-                    position="absolute"
-                    top={2}
-                    right={2}
-                    colorScheme={product.stock > 0 ? 'green' : 'red'}
-                    borderRadius="full"
-                  >
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
-                  </Tag>
+        <Grid
+          templateColumns={{
+            base: 'repeat(1, 1fr)',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(4, 1fr)'
+          }}
+          gap={6}
+        >
+          {isLoading
+            ? Array(8).fill(0).map((_, i) => (
+                <Box
+                  key={i}
+                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  borderRadius="lg"
+                  overflow="hidden"
+                >
+                  <Skeleton height="200px" />
+                  <VStack p={4} spacing={3}>
+                    <Skeleton height="20px" width="80%" />
+                    <Skeleton height="20px" width="60%" />
+                    <Skeleton height="20px" width="40%" />
+                  </VStack>
                 </Box>
-                
-                <VStack p={4} spacing={2} align="stretch">
-                  <Text
-                    fontSize="lg"
-                    fontWeight="semibold"
-                    noOfLines={1}
-                    cursor="pointer"
-                    onClick={() => navigate(`/product/${product.id}`)}
-                    _hover={{ color: 'blue.500' }}
-                  >
-                    {product.name}
-                  </Text>
-                  <Text
-                    color="gray.500"
-                    fontSize="sm"
-                    noOfLines={2}
-                    height="40px"
-                  >
-                    {product.description}
-                  </Text>
-                  <HStack justify="space-between" align="center" pt={2}>
+              ))
+            : filteredProducts.map(product => (
+                <Box
+                  key={product.id}
+                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  borderRadius="lg"
+                  overflow="hidden"
+                  transition="all 0.3s"
+                  _hover={{
+                    transform: 'translateY(-4px) scale(1.02)',
+                  }}
+                >
+                  <Box position="relative">
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.name}
+                      height="200px"
+                      width="100%"
+                      objectFit="cover"
+                      onClick={() => navigate(`/product/${product.id}`)}
+                      cursor="pointer"
+                      transition="all 0.5s"
+                      _hover={{ transform: 'scale(1.05)' }}
+                    />
+                    <Tag
+                      position="absolute"
+                      top={2}
+                      right={2}
+                      colorScheme={product.stock > 0 ? 'green' : 'red'}
+                      borderRadius="full"
+                      className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+                    >
+                      {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
+                    </Tag>
+                  </Box>
+                  
+                  <VStack p={4} spacing={2} align="stretch">
                     <Text
-                      fontSize="xl"
-                      fontWeight="bold"
-                      color={useColorModeValue('blue.600', 'blue.300')}
+                      fontSize="lg"
+                      fontWeight="semibold"
+                      noOfLines={1}
+                      cursor="pointer"
+                      onClick={() => navigate(`/product/${product.id}`)}
+                      _hover={{ color: 'blue.500' }}
                     >
-                      ${product.price}
+                      {product.name}
                     </Text>
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      leftIcon={<FaShoppingCart />}
-                      onClick={() => handleAddToCart(product)}
-                      isDisabled={product.stock === 0}
-                      variant="outline"
-                      _hover={{
-                        bg: 'blue.500',
-                        color: 'white'
-                      }}
+                    <Text
+                      color={isLightMode ? "gray.700" : "gray.300"}
+                      fontSize="sm"
+                      noOfLines={2}
+                      height="40px"
                     >
-                      Add to Cart
-                    </Button>
-                  </HStack>
-                </VStack>
-              </Box>
-            ))}
-      </Grid>
+                      {product.description}
+                    </Text>
+                    <HStack justify="space-between" align="center" pt={2}>
+                      <Text
+                        fontSize="xl"
+                        fontWeight="bold"
+                        color={useColorModeValue('blue.600', 'blue.300')}
+                      >
+                        ${product.price}
+                      </Text>
+                      <Button
+                        colorScheme="blue"
+                        size="sm"
+                        leftIcon={<FaShoppingCart />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
+                        isDisabled={product.stock === 0}
+                        variant="outline"
+                        className="neon-button-blue"
+                        _hover={{
+                          bg: 'blue.500',
+                          color: 'white'
+                        }}
+                      >
+                        Add to Cart
+                      </Button>
+                    </HStack>
+                  </VStack>
+                </Box>
+              ))}
+        </Grid>
+      </Container>
     </Box>
   );
 };

@@ -38,7 +38,7 @@ const ProductDetails: React.FC = () => {
     (state: RootState) => state.products
   );
 
-  const bgColor = useColorModeValue('white', 'gray.800');
+  const isLightMode = useColorModeValue(true, false);
 
   useEffect(() => {
     if (id) {
@@ -77,121 +77,141 @@ const ProductDetails: React.FC = () => {
   }
 
   return (
-    <Container maxW="container.xl">
-      <VStack align="stretch" spacing={8}>
-        <Breadcrumb spacing={2}>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate('/')}>Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate('/products')}>Products</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbItem isCurrentPage>
-            <BreadcrumbLink>{product?.name || 'Product Details'}</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
+    <Box className="animated-gradient-bg" minH="100vh" py={8}>
+      <Container maxW="container.xl">
+        <Box 
+          className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+          p={6} 
+          borderRadius="lg"
+        >
+          <VStack align="stretch" spacing={8}>
+            <Breadcrumb spacing={2}>
+              <BreadcrumbItem>
+                <BreadcrumbLink onClick={() => navigate('/')}>Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <BreadcrumbLink onClick={() => navigate('/products')}>Products</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem isCurrentPage>
+                <BreadcrumbLink>{product?.name || 'Product Details'}</BreadcrumbLink>
+              </BreadcrumbItem>
+            </Breadcrumb>
 
-        {isLoading ? (
-          <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={8}>
-            <Skeleton height="400px" />
-            <VStack align="start" spacing={4}>
-              <Skeleton height="40px" width="80%" />
-              <Skeleton height="30px" width="40%" />
-              <Skeleton height="24px" width="30%" />
-              <Skeleton height="100px" width="100%" />
-              <Skeleton height="40px" width="200px" />
-            </VStack>
-          </Grid>
-        ) : product ? (
-          <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={8}>
-            <Box
-              bg={bgColor}
-              borderRadius="lg"
-              overflow="hidden"
-              shadow="md"
-              position="relative"
-            >
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                width="100%"
-                height="400px"
-                objectFit="cover"
-              />
-              <Badge
-                position="absolute"
-                top={4}
-                right={4}
-                colorScheme={product.stock > 0 ? 'green' : 'red'}
-                fontSize="md"
-                px={3}
-                py={1}
-                borderRadius="full"
-              >
-                {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
-              </Badge>
-            </Box>
-
-            <VStack align="start" spacing={6}>
-              <Box>
-                <Text fontSize="3xl" fontWeight="bold" mb={2}>
-                  {product.name}
-                </Text>
-                <Text
-                  fontSize="2xl"
-                  fontWeight="bold"
-                  color={useColorModeValue('blue.600', 'blue.300')}
+            {isLoading ? (
+              <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={8}>
+                <Skeleton height="400px" />
+                <VStack align="start" spacing={4}>
+                  <Skeleton height="40px" width="80%" />
+                  <Skeleton height="30px" width="40%" />
+                  <Skeleton height="24px" width="30%" />
+                  <Skeleton height="100px" width="100%" />
+                  <Skeleton height="40px" width="200px" />
+                </VStack>
+              </Grid>
+            ) : product ? (
+              <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={8}>
+                <Box
+                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  borderRadius="lg"
+                  overflow="hidden"
+                  position="relative"
                 >
-                  ${product.price}
-                </Text>
-              </Box>
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width="100%"
+                    height="400px"
+                    objectFit="cover"
+                    transition="all 0.5s"
+                    _hover={{ transform: 'scale(1.03)' }}
+                  />
+                  <Badge
+                    position="absolute"
+                    top={4}
+                    right={4}
+                    colorScheme={product.stock > 0 ? 'green' : 'red'}
+                    fontSize="md"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+                  >
+                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
+                  </Badge>
+                </Box>
 
-              <Text fontSize="lg" color="gray.600">
-                {product.description}
-              </Text>
+                <VStack align="start" spacing={6} className={isLightMode ? "glass-card" : "dark-glass-card"} p={6} borderRadius="lg">
+                  <Box width="100%">
+                    <Text fontSize="3xl" fontWeight="bold" mb={2}>
+                      {product.name}
+                    </Text>
+                    <Text
+                      fontSize="2xl"
+                      fontWeight="bold"
+                      color={useColorModeValue('blue.600', 'blue.300')}
+                    >
+                      ${product.price}
+                    </Text>
+                  </Box>
 
-              <Divider />
+                  <Text fontSize="lg" color={isLightMode ? "gray.700" : "gray.300"}>
+                    {product.description}
+                  </Text>
 
-              <VStack align="start" spacing={4} width="100%">
-                <Text fontSize="xl" fontWeight="semibold">
-                  Product Details
-                </Text>
-                <Grid templateColumns="auto 1fr" gap={4}>
-                  <Text fontWeight="medium">Category:</Text>
-                  <Text>{product.category}</Text>
-                  <Text fontWeight="medium">SKU:</Text>
-                  <Text>{product.id}</Text>
-                  <Text fontWeight="medium">Availability:</Text>
-                  <Text>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</Text>
-                </Grid>
-              </VStack>
+                  <Divider />
 
-              <HStack spacing={4} pt={4}>
-                <Button
-                  colorScheme="blue"
-                  size="lg"
-                  leftIcon={<FaShoppingCart />}
-                  onClick={handleAddToCart}
-                  isDisabled={product.stock === 0}
-                  flex={1}
-                >
-                  Add to Cart
-                </Button>
-                <IconButton
-                  aria-label="Back to products"
-                  icon={<ChevronLeftIcon />}
-                  onClick={() => navigate('/products')}
-                  size="lg"
-                  variant="outline"
-                />
-              </HStack>
-            </VStack>
-          </Grid>
-        ) : (
-          <Text>Product not found</Text>
-        )}
-      </VStack>
-    </Container>
+                  <VStack align="start" spacing={4} width="100%">
+                    <Text fontSize="xl" fontWeight="semibold">
+                      Product Details
+                    </Text>
+                    <Grid templateColumns="auto 1fr" gap={4}>
+                      <Text fontWeight="medium">Category:</Text>
+                      <Text>{product.category}</Text>
+                      <Text fontWeight="medium">SKU:</Text>
+                      <Text>{product.id}</Text>
+                      <Text fontWeight="medium">Availability:</Text>
+                      <Text>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</Text>
+                    </Grid>
+                  </VStack>
+
+                  <HStack spacing={4} pt={4} width="100%">
+                    <Button
+                      colorScheme="blue"
+                      size="lg"
+                      leftIcon={<FaShoppingCart />}
+                      onClick={handleAddToCart}
+                      isDisabled={product.stock === 0}
+                      flex={1}
+                      className="neon-button-blue"
+                      _hover={{
+                        transform: 'scale(1.05)',
+                        bg: 'blue.500',
+                        color: 'white'
+                      }}
+                    >
+                      Add to Cart
+                    </Button>
+                    <IconButton
+                      aria-label="Back to products"
+                      icon={<ChevronLeftIcon />}
+                      onClick={() => navigate('/products')}
+                      size="lg"
+                      variant="outline"
+                      className="neon-button-purple"
+                      _hover={{
+                        transform: 'scale(1.05)',
+                      }}
+                    />
+                  </HStack>
+                </VStack>
+              </Grid>
+            ) : (
+              <Text>Product not found</Text>
+            )}
+          </VStack>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
