@@ -5,6 +5,7 @@ import { sampleProducts } from '../../data/products';
 
 export interface Product {
   id: string;
+  userId: string;
   name: string;
   description: string;
   price: number;
@@ -64,6 +65,7 @@ export const initializeProducts = createAsyncThunk(
       const productsData = snapshot.val();
       return Object.keys(productsData).map(key => ({
         id: key,
+        userId: productsData[key].userId || 'defaultUserId',
         ...productsData[key]
       }));
     } catch (error) {
@@ -87,6 +89,7 @@ export const fetchProducts = createAsyncThunk(
       const productsData = snapshot.val();
       return Object.keys(productsData).map(key => ({
         id: key,
+        userId: productsData[key].userId || 'defaultUserId',
         ...productsData[key]
       }));
     } catch (error) {
@@ -112,14 +115,18 @@ export const fetchProductById = createAsyncThunk(
 
 export const createProduct = createAsyncThunk(
   'products/createProduct',
-  async (product: NewProduct) => {
+  async (product: NewProduct, { getState }) => {
     try {
+      const state = getState() as { auth: { user: { uid: string } } };
+      const userId = state.auth.user.uid;
+
       const productsRef = ref(db, 'products');
       const newProductRef = push(productsRef);
       const productId = newProductRef.key!;
       
       const newProduct = {
         id: productId,
+        userId: userId,
         ...product
       };
       
@@ -225,8 +232,34 @@ const productsSlice = createSlice({
       .addCase(updateProductStock.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Failed to update product stock';
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.items = state.items.filter(item => item.id !== action.payload);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to delete product';
       });
   },
 });
 
-export default productsSlice.reducer; 
+export const deleteProduct = createAsyncThunk(
+  'products/deleteProduct',
+  async (id: string) => {
+    try {
+      const productRef = ref(db, `products/${id}`);
+      await set(productRef, null);
+      return id;
+    } catch (error) {
+      console.error('Firebase delete error:', error);
+      throw error;
+    }
+  }
+);
+
+export default productsSlice.reducer;

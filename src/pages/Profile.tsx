@@ -14,7 +14,7 @@ import {
   useColorModeValue,
   HStack,
 } from '@chakra-ui/react';
-import { FaSignOutAlt, FaKey, FaShieldAlt } from 'react-icons/fa';
+import { FaSignOutAlt, FaKey, FaShieldAlt, FaPlus } from 'react-icons/fa';
 import { updateProfile, signOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { RootState } from '../store';
@@ -69,6 +69,7 @@ const Profile: React.FC = () => {
     try {
       await signOut(auth);
       navigate('/signin');
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -110,6 +111,32 @@ const Profile: React.FC = () => {
                 {user?.displayName || 'User'}
               </Text>
               <Text color="gray.500">{user?.email}</Text>
+            </VStack>
+            {/* New Button to Create Product */}
+            <VStack mt={4}>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                onClick={() => navigate('/create-product')}
+                leftIcon={<FaPlus />}
+                _hover={{
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+              >
+                Create Product
+              </Button>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                onClick={() => navigate('/my-products')}
+                _hover={{
+                  transform: 'translateY(-2px)',
+                  shadow: 'md',
+                }}
+              >
+                See My Products
+              </Button>
             </VStack>
             <Button
               w="full"
@@ -230,4 +257,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

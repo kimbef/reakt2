@@ -1,6 +1,7 @@
 export const sampleProducts = [
   {
     id: '1',
+    userId: 'sampleUser1',
     name: 'Premium Wireless Headphones',
     description: 'High-quality wireless headphones with noise cancellation and premium sound quality.',
     price: 299.99,
@@ -10,6 +11,7 @@ export const sampleProducts = [
   },
   {
     id: '2',
+    userId: 'sampleUser2',
     name: 'Smart Watch Pro',
     description: 'Advanced smartwatch with health tracking, notifications, and long battery life.',
     price: 199.99,
@@ -19,6 +21,7 @@ export const sampleProducts = [
   },
   {
     id: '3',
+    userId: 'sampleUser1',
     name: 'Premium Leather Wallet',
     description: 'Handcrafted genuine leather wallet with RFID protection.',
     price: 49.99,
@@ -28,6 +31,7 @@ export const sampleProducts = [
   },
   {
     id: '4',
+    userId: 'sampleUser2',
     name: 'Minimalist Backpack',
     description: 'Stylish and functional backpack perfect for daily use and travel.',
     price: 79.99,
@@ -37,6 +41,7 @@ export const sampleProducts = [
   },
   {
     id: '5',
+    userId: 'sampleUser1',
     name: 'Wireless Gaming Mouse',
     description: 'High-precision wireless gaming mouse with customizable RGB lighting.',
     price: 89.99,
@@ -46,6 +51,7 @@ export const sampleProducts = [
   },
   {
     id: '6',
+    userId: 'sampleUser2',
     name: 'Mechanical Keyboard',
     description: 'Professional mechanical keyboard with RGB backlighting and premium switches.',
     price: 149.99,
@@ -55,6 +61,7 @@ export const sampleProducts = [
   },
   {
     id: '7',
+    userId: 'sampleUser1',
     name: 'Premium Coffee Maker',
     description: 'Advanced coffee maker with temperature control and multiple brewing options.',
     price: 199.99,
@@ -64,6 +71,7 @@ export const sampleProducts = [
   },
   {
     id: '8',
+    userId: 'sampleUser2',
     name: 'Smart Home Speaker',
     description: 'Voice-controlled smart speaker with premium sound quality.',
     price: 129.99,
@@ -71,4 +79,4 @@ export const sampleProducts = [
     stock: 22,
     imageUrl: 'https://images.unsplash.com/photo-1589003077984-894e133dabab?auto=format&fit=crop&w=800&q=80'
   }
-]; 
+];

@@ -19,7 +19,7 @@ import Products from './pages/Products';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart.tsx';
 import Profile from './pages/Profile';
-import AdminProducts from './pages/AdminProducts';
+import CreateProduct from './pages/CreateProduct.tsx';
 
 const AppContent = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -56,10 +56,10 @@ const AppContent = () => {
 
         {/* Protected Routes */}
         <Route
-          path="/admin/products"
+          path="/create-product"
           element={
             <ProtectedRoute>
-              <AdminProducts />
+              <CreateProduct />
             </ProtectedRoute>
           }
         />

@@ -164,7 +164,8 @@ const Products: React.FC = () => {
             base: 'repeat(1, 1fr)',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
-            lg: 'repeat(4, 1fr)'
+            lg: 'repeat(4, 1fr)',
+            xl: 'repeat(5, 1fr)'
           }}
           gap={6}
         >
@@ -172,7 +173,7 @@ const Products: React.FC = () => {
             ? Array(8).fill(0).map((_, i) => (
                 <Box
                   key={i}
-                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  className={isLightMode ? "glass-card" : "dark-glass-effect"}
                   borderRadius="lg"
                   overflow="hidden"
                 >
@@ -187,7 +188,7 @@ const Products: React.FC = () => {
             : filteredProducts.map(product => (
                 <Box
                   key={product.id}
-                  className={isLightMode ? "glass-card" : "dark-glass-card"}
+                  className={isLightMode ? "glass-card" : "dark-glass-effect"}
                   borderRadius="lg"
                   overflow="hidden"
                   transition="all 0.3s"
@@ -274,4 +275,4 @@ const Products: React.FC = () => {
   );
 };
 
-export default Products; 
+export default Products;

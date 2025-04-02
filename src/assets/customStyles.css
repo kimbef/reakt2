@@ -1,66 +1,105 @@
+/* New Animated Background Gradient */
 .animated-gradient-bg {
-  background: linear-gradient(to bottom,
-    #243c5a, /* Darker blue base */
-    #4a148c, /* Deep purple */
-    #ad1457, /* Magenta */
-    #f06292, /* Pink */
-    #ffab40  /* Orange accent */
-  );
-  background-size: 200% 200%; /* Increased size for more dynamic animation */
-  animation: futuristicGradient 20s linear infinite; /* Slower, more pronounced animation */
+  background: transparent;
+  background-size: 200% 200%;
+  animation: newBackgroundAnimation 25s linear infinite;
+  font-family: 'Roboto', sans-serif; /* Add a readable font */
 }
 
-@keyframes futuristicGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Enhanced Gradient Text Animation */
-.gradient-text {
-  background: linear-gradient(90deg, #00bcd4, #9c27b0); /* Cyan to Purple */
+/* Apply gradient text to product names and descriptions */
+.glass-card h2,
+.glass-card .chakra-text {
+  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
-  font-weight: bold; /* Make text stand out more */
-  transition: text-shadow 0.3s ease;
+}
+
+@keyframes newBackgroundAnimation {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Apply neon effect to all buttons */
+.Button, .chakra-button {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease, text-shadow 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease; /* Comprehensive transitions */
+  color: #fff;
+  border-width: 2px !important; /* Thicker borders for neon effect */
+  border-style: solid !important;
+  border-radius: 8px; /* Slightly rounded buttons */
+  padding: 0.75rem 1.5rem; /* Adjusted padding */
+  z-index: 1; /* Ensure text is above pseudo-elements */
+  background-color: rgba(255, 255, 255, 0.1); /* Add a subtle background color */
+}
+
+.Button:hover, .Button:focus, .chakra-button:hover, .chakra-button:focus {
+  color: #e0f7fa !important; /* Light text color on hover */
+  text-shadow: 0 0 8px rgba(224, 247, 250, 0.9), 0 0 15px rgba(224, 247, 250, 0.9); /* Stronger text shadow */
+  box-shadow: 0 0 8px rgba(var(--neon-color), 0.7), /* Use CSS variables for neon colors */
+              0 0 15px rgba(var(--neon-color), 0.6),
+              0 0 20px rgba(var(--neon-color), 0.5),
+              inset 0 0 8px rgba(var(--neon-color), 0.1) !important;
+  border-color: var(--neon-color) !important; /* Use CSS variables for border color */
+  transform: scale(1.07); /* Slightly more scale on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Add a subtle background color on hover */
+}
+
+body.futuristic-body-bg {
+  background: linear-gradient(to right,
+    #030205, /* Deep violet start */
+    #eb9d00, /* Medium violet */
+    #1d06f1 /* Light violet */
+  );
+  background-size: 200% 200%;
+  animation: violetBackgroundAnimation 10s linear infinite;
+}
+/* Gradient Text Animation */
+.gradient-text {
+  background-size: cover;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: #651fff;
+  transition: all 0.3s ease;
 }
 
 .gradient-text:hover {
-  text-shadow: 0 0 10px rgba(156, 39, 176, 0.8); /* Neon glow on hover */
+  text-shadow: 0 0 5px rgba(156, 39, 176, 0.8); /* Neon glow on hover */
 }
 
 /* Hero Section Futuristic Gradient Text */
 .hero-gradient-text {
-  background: linear-gradient(to right, #64ffda, #00b0ff, #bb86fc); /* Vibrant cyan, blue, purple */
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
+  -webkit-text-fill-color: #54a003;
   -webkit-background-clip: text;
   background-clip: text;
   font-weight: bolder; /* Even stronger for hero text */
   letter-spacing: 1.2px; /* Slightly wider spacing for impact */
-  animation: heroTextPulse 5s ease-in-out infinite; /* Subtle pulse animation */
+  animation: heroTextPulse 10s linear infinite; /* Subtle pulse animation */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 @keyframes heroTextPulse {
   0%, 100% { text-shadow: none; }
-  50% { text-shadow: 0 0 15px rgba(100, 255, 218, 0.9); } /* Cyan glow pulse */
+  100% { text-shadow: 0 0 5px rgb(251, 251, 251); } /* Cyan glow pulse */
 }
 
 /* Futuristic Navbar Gradient Background */
 .navbar-gradient {
   background: linear-gradient(to right,
-    #2962ff, /* Electric Blue */
-    #651fff, /* Vivid Purple */
-    #c2185b  /* Deep Pink */
+    #29bbff, 
+    #651fff
   );
-  background-size: 200% 100%;
-  animation: navbarAnimation 25s linear infinite; /* Slower, smoother navbar animation */
+  background-size: 150% 150%;
+  animation: navbarAnimation 40s linear infinite; /* Slower, smoother navbar animation */
   backdrop-filter: blur(12px) saturate(150%); /* More intense blur and saturation */
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Thicker, brighter border */
@@ -74,46 +113,43 @@
 
 
 body.futuristic-body-bg {
-  background: linear-gradient(to bottom,
-    #4a148c, /* Deep violet start */
-    #6a1b9a, /* Medium violet */
-    #8e24aa, /* Light violet */
-    #aa00ff  /* Accent violet */
+  background: linear-gradient(to right,
+    
+    #542079,/* Medium violet */
+    #0388fd,
+    #f1efed /* Light violet */
+    
   );
   background-size: 200% 200%;
-  animation: violetBackgroundAnimation 25s linear infinite;
+  animation: gradient-shift 5s linear infinite;
 }
 
-@keyframes violetBackgroundAnimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
+@keyframes gradient-shift {
+  to {
+    background-position-x: -100px;
   }
 }
 /* Glassmorphism Effects - Refined */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.1); /* Slightly more transparent */
+  background: rgba(255, 255, 255, 0.4); /* Slightly more transparent */
   backdrop-filter: blur(15px) saturate(120%); /* Increased blur and saturation */
   -webkit-backdrop-filter: blur(15px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.25); /* Brighter border */
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+  border: 1px solid rgba(255, 255, 255, 0.35); /* Brighter border */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); /* Deeper shadow */
   border-radius: 12px; /* More rounded corners */
+  transition: all 0.3s ease;
 }
 
 /* Hero section specific glass effect - Intensified - Light Mode Adjustment */
 .hero-glass-effect {
-  background: transparent; /* Solid white background for hero glass */
+  background: cover; /* Solid white background for hero glass */
   backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.5); /* White border */
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(12, 11, 11, 0.5); /* White border */
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.1); /* Shadow for depth */
   border-radius: 15px;
-  color: #333; /* Ensure dark text for readability on white */
+  background-clip: text;
+  color: transparent; /* Ensure dark text for readability on white */
 }
 
 .glass-card {
@@ -125,36 +161,49 @@ body.futuristic-body-bg {
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); /* Shadow for depth */
   transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background-color 0.3s ease-out;
   color: #333; /* Ensure dark text for readability on white */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border */
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card img {
+  transition: transform 0.5s ease;
+}
+
+.glass-card:hover img {
+  transform: scale(1.05);
 }
 
 
 /* Dark theme adjustments - More Cyberpunk - No Change Needed */
+
+
+.glass-card.dark-mode {
+  background-color: #000;
+  color: #fff;
+}
+
+.dark-hero-glass-effect {
+  background: rgba(27, 37, 51, 0.7);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(49, 63, 81, 0.5);
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+}
+
 .dark-glass-effect {
-  background: rgba(27, 37, 51, 0.6);
-  backdrop-filter: blur(15px) saturate(120%);
-  -webkit-backdrop-filter: blur(15px) saturate(120%);
-  border: 1px solid rgba(49, 63, 81, 0.4);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(40, 40, 40, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
   border-radius: 12px;
 }
 
-.dark-hero-glass-effect {
-  background: rgba(27, 37, 51, 0.7);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(49, 63, 81, 0.5);
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
-}
-
-.dark-hero-glass-effect {
-  background: rgba(27, 37, 51, 0.7);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  border: 1px solid rgba(49, 63, 81, 0.5);
-  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
-}
 
 /* Custom Cursor - Neon Accent */
 .custom-cursor {
@@ -177,14 +226,14 @@ body.futuristic-body-bg {
 .cursor-dot {
   width: 6px; /* Slightly larger dot */
   height: 6px;
-  background-color: #00f2ea; /* Neon cyan cursor dot */
+  background-color: #f29900; /* Neon cyan cursor dot */
   box-shadow: 0 0 5px #00f2ea, 0 0 10px #00f2ea; /* Neon glow for the dot */
 }
 
 .cursor-outline {
-  width: 24px; /* Slightly larger outline */
-  height: 24px;
-  background-color: transparent;
+  width: 14px; /* Slightly larger outline */
+  height: 14px;
+  background-color: goldenrod;
   border: 2px solid #bb86fc; /* Neon purple outline */
 }
 
@@ -214,6 +263,7 @@ body.futuristic-body-bg {
   border-radius: 8px; /* Slightly rounded buttons */
   padding: 0.75rem 1.5rem; /* Adjusted padding */
   z-index: 1; /* Ensure text is above pseudo-elements */
+  background-color: rgba(255, 255, 255, 0.1); /* Add a subtle background color */
 }
 
 /* Common hover and focus styles for all neon buttons */
@@ -228,21 +278,22 @@ body.futuristic-body-bg {
               inset 0 0 8px rgba(var(--neon-color), 0.1) !important;
   border-color: var(--neon-color) !important; /* Use CSS variables for border color */
   transform: scale(1.07); /* Slightly more scale on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Add a subtle background color on hover */
 }
 
 /* Specific neon button colors using CSS variables */
 .neon-button-blue {
-  --neon-color: 66, 153, 225; /* RGB for blue */
-  border-color: rgba(var(--neon-color), 0.7) !important;
+  --neon-color: 100, 149, 237; /* Cornflower Blue */
+  border-color: rgba(var(--neon-color), 1) !important;
 }
 
 .neon-button-purple {
-  --neon-color: 159, 122, 234; /* RGB for purple */
+  --neon-color: 178, 102, 255; /* Dark Orchid */
   border-color: rgba(var(--neon-color), 0.7) !important;
 }
 
 .neon-button-pink {
-  --neon-color: 237, 100, 166; /* RGB for pink */
+  --neon-color: 255, 105, 180; /* Hot Pink */
   border-color: rgba(var(--neon-color), 0.7) !important;
 }
 
