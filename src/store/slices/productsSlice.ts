@@ -161,12 +161,44 @@ export const updateProductStock = createAsyncThunk(
   }
 );
 
+export const updateProduct = createAsyncThunk(
+  'products/updateProduct',
+  async (updatedProduct: Product) => {
+    try {
+      const productRef = ref(db, `products/${updatedProduct.id}`);
+      await set(productRef, updatedProduct);
+      return updatedProduct;
+    } catch (error) {
+      console.error('Firebase update error:', error);
+      throw error;
+    }
+  }
+);
+
 const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(updateProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.items.findIndex(item => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        if (state.selectedProduct?.id === action.payload.id) {
+          state.selectedProduct = action.payload;
+        }
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to update product';
+      })
       .addCase(initializeProducts.pending, (state) => {
         state.isLoading = true;
         state.error = null;

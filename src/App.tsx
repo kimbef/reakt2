@@ -20,6 +20,8 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart.tsx';
 import Profile from './pages/Profile';
 import CreateProduct from './pages/CreateProduct.tsx';
+import MyProducts from './pages/MyProducts.tsx';
+import EditProduct from './pages/EditProduct.tsx';
 
 const AppContent = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -79,6 +81,21 @@ const AppContent = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+            path="/my-products"
+            element={
+              <ProtectedRoute>
+                <MyProducts />
+                </ProtectedRoute>
+            }  />
+         <Route
+          path="/edit-product/:id"
+          element={
+            <ProtectedRoute>
+              <EditProduct />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -100,4 +117,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

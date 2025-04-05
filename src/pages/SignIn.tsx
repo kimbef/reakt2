@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -16,6 +16,7 @@ import {
   Card,
   CardBody,
   useColorModeValue,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { signIn } from '../store/slices/authSlice';
@@ -31,17 +32,56 @@ const SignIn: React.FC = () => {
     email: '',
     password: '',
   });
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
+  useEffect(() => {
+    setFormData({ email: '', password: '' });
+    setErrors({ email: '', password: '' });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email)) {
+      newErrors.email = 'Invalid email address';
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -97,7 +137,7 @@ const SignIn: React.FC = () => {
 
                 <Box as="form" onSubmit={handleSubmit}>
                   <VStack spacing={6}>
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.email}>
                       <FormLabel fontSize="lg">Email</FormLabel>
                       <Input
                         name="email"
@@ -107,9 +147,10 @@ const SignIn: React.FC = () => {
                         placeholder="Enter your email"
                         size="lg"
                       />
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.password}>
                       <FormLabel fontSize="lg">Password</FormLabel>
                       <Input
                         name="password"
@@ -119,6 +160,7 @@ const SignIn: React.FC = () => {
                         placeholder="Enter your password"
                         size="lg"
                       />
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
                     </FormControl>
 
                     <Button
@@ -144,4 +186,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn; 
+export default SignIn;

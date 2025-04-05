@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -16,6 +16,7 @@ import {
   Card,
   CardBody,
   useColorModeValue,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { signUp } from '../store/slices/authSlice';
@@ -32,29 +33,82 @@ const SignUp: React.FC = () => {
     confirmPassword: '',
     displayName: '',
   });
+  const [errors, setErrors] = useState({
+    displayName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
+  useEffect(() => {
+    setFormData({
+      email: '',
+      password: '',
+      confirmPassword: '',
+      displayName: '',
+    });
+    setErrors({
+      displayName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' })); // Clear error on change
   };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!formData.displayName) {
+      newErrors.displayName = 'Name is required';
+      isValid = false;
+    }
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email)) {
+      newErrors.email = 'Invalid email address';
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Confirm Password is required';
+      isValid = false;
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: 'Error',
-        description: 'Passwords do not match',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+
+    if (!validateForm()) {
       return;
     }
-
+    
     setIsLoading(true);
 
     try {
@@ -111,7 +165,7 @@ const SignUp: React.FC = () => {
 
                 <Box as="form" onSubmit={handleSubmit}>
                   <VStack spacing={6}>
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.displayName}>
                       <FormLabel fontSize="lg">Name</FormLabel>
                       <Input
                         name="displayName"
@@ -121,9 +175,10 @@ const SignUp: React.FC = () => {
                         placeholder="Enter your name"
                         size="lg"
                       />
+                       <FormErrorMessage>{errors.displayName}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.email}>
                       <FormLabel fontSize="lg">Email</FormLabel>
                       <Input
                         name="email"
@@ -133,9 +188,10 @@ const SignUp: React.FC = () => {
                         placeholder="Enter your email"
                         size="lg"
                       />
+                      <FormErrorMessage>{errors.email}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.password}>
                       <FormLabel fontSize="lg">Password</FormLabel>
                       <Input
                         name="password"
@@ -145,9 +201,10 @@ const SignUp: React.FC = () => {
                         placeholder="Enter your password"
                         size="lg"
                       />
+                      <FormErrorMessage>{errors.password}</FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isRequired>
+                    <FormControl isRequired isInvalid={!!errors.confirmPassword}>
                       <FormLabel fontSize="lg">Confirm Password</FormLabel>
                       <Input
                         name="confirmPassword"
@@ -157,6 +214,7 @@ const SignUp: React.FC = () => {
                         placeholder="Confirm your password"
                         size="lg"
                       />
+                      <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
                     </FormControl>
 
                     <Button
@@ -182,4 +240,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp; 
+export default SignUp;
