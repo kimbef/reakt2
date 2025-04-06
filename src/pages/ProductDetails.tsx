@@ -25,7 +25,7 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { AppDispatch, RootState } from '../store';
 import { fetchProductById } from '../store/slices/productsSlice';
 import { updateCart, selectCartItems } from '../store/slices/cartSlice';
-
+import { deleteProduct } from '../store/slices/productsSlice';
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
@@ -56,7 +56,7 @@ const ProductDetails: React.FC = () => {
               : item
           )
         : [...cartItems, { ...product, quantity: 1 }];
-      
+
       dispatch(updateCart({ userId: user.uid, items: updatedItems }));
       toast({
         title: 'Added to cart',
@@ -79,9 +79,9 @@ const ProductDetails: React.FC = () => {
   return (
     <Box className="animated-gradient-bg" minH="100vh" py={8}>
       <Container maxW="container.xl">
-        <Box 
+        <Box
           className={isLightMode ? "glass-effect" : "dark-glass-effect"}
-          p={6} 
+          p={6}
           borderRadius="lg"
         >
           <VStack align="stretch" spacing={8}>
@@ -203,6 +203,16 @@ const ProductDetails: React.FC = () => {
                       }}
                     />
                   </HStack>
+                  {user?.uid === product.userId && (
+                    <HStack spacing={4} pt={4} width="100%" justify="center">
+                      <Button colorScheme="blue" size="lg" onClick={() => navigate(`/edit-product/${product.id}`)}>
+                        Edit Product
+                      </Button>
+                      <Button colorScheme="red" size="lg" onClick={() => dispatch(deleteProduct(product.id)).then(() => navigate('/my-products'))}>
+                        Delete Product
+                      </Button>
+                    </HStack>
+                  )}
                 </VStack>
               </Grid>
             ) : (
@@ -213,6 +223,7 @@ const ProductDetails: React.FC = () => {
       </Container>
     </Box>
   );
-};
 
-export default ProductDetails; 
+}
+
+export default ProductDetails;

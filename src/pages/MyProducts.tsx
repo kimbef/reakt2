@@ -53,6 +53,9 @@ const MyProducts: React.FC = () => {
       <Container maxW="container.xl" pt={6}>
         <Box className={isLightMode ? "glass-effect" : "dark-glass-effect"} p={6} borderRadius="lg" mb={8}>
           <Heading size="xl" mb={6} textAlign="center">My Products</Heading>
+          <Button colorScheme="blue" onClick={() => navigate('/products')} mb={4}>
+            Check all products
+          </Button>
         </Box>
 
         <Grid

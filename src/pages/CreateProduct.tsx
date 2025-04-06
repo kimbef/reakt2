@@ -15,11 +15,13 @@ import {
   Heading,
   FormErrorMessage,
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../store';
 import { createProduct } from '../store/slices/productsSlice';
 
 const CreateProduct: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -115,8 +117,8 @@ const CreateProduct: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
-
-      // Reset form
+      
+      // Reset form and navigate to MyProducts
       setFormData({
         name: '',
         description: '',
@@ -133,6 +135,8 @@ const CreateProduct: React.FC = () => {
         category: '',
         stock: '',
       });
+      navigate('/my-products');
+
     } catch (error: any) {
       toast({
         title: 'Error',
