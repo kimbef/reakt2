@@ -174,6 +174,7 @@ const SignUp: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter your name"
                         size="lg"
+                        autoComplete="off"
                       />
                        <FormErrorMessage>{errors.displayName}</FormErrorMessage>
                     </FormControl>
@@ -187,6 +188,7 @@ const SignUp: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter your email"
                         size="lg"
+                        autoComplete="off"
                       />
                       <FormErrorMessage>{errors.email}</FormErrorMessage>
                     </FormControl>
@@ -200,6 +202,7 @@ const SignUp: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter your password"
                         size="lg"
+                        autoComplete="off"
                       />
                       <FormErrorMessage>{errors.password}</FormErrorMessage>
                     </FormControl>
@@ -213,6 +216,7 @@ const SignUp: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Confirm your password"
                         size="lg"
+                        autoComplete="off"
                       />
                       <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
                     </FormControl>

@@ -146,6 +146,7 @@ const SignIn: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter your email"
                         size="lg"
+                        autoComplete="off"
                       />
                       <FormErrorMessage>{errors.email}</FormErrorMessage>
                     </FormControl>
@@ -159,6 +160,7 @@ const SignIn: React.FC = () => {
                         onChange={handleChange}
                         placeholder="Enter your password"
                         size="lg"
+                        autoComplete="off"
                       />
                       <FormErrorMessage>{errors.password}</FormErrorMessage>
                     </FormControl>

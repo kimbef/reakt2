@@ -212,7 +212,7 @@ const Products: React.FC = () => {
                       position="absolute"
                       top={2}
                       right={2}
-                      colorScheme={product.stock > 0 ? 'green' : 'red'}
+                      colorScheme={product.stock > 0 ? 'black' : 'red'}
                       borderRadius="full"
                       className={isLightMode ? "glass-effect" : "dark-glass-effect"}
                     >

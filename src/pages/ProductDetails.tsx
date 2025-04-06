@@ -129,7 +129,7 @@ const ProductDetails: React.FC = () => {
                     position="absolute"
                     top={4}
                     right={4}
-                    colorScheme={product.stock > 0 ? 'green' : 'red'}
+                    colorScheme={product.stock > 0 ? 'black' : 'red'}
                     fontSize="md"
                     px={3}
                     py={1}
