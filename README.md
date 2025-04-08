@@ -1,39 +1,26 @@
-🔥 React E-Commerce Application – Exam-Ready Summary
-📌 Core Functionality
-This project is a fully functional modern e-commerce app featuring:
+# Reakt2
 
-User Authentication with sign-up, sign-in, and profile management
+**Reakt2** is a modern e-commerce SPA built with **React + TypeScript**, powered by **Firebase** for real-time data and authentication. It features a product catalog, user login system, and responsive design using **Chakra UI**.
 
-Product catalog with search and filtering
+## 🚀 Features
 
-Shopping cart with persistent state
+- 🔐 Firebase Auth (Login/Register)
+- 📦 Product listing & details
+- 🛒 Shopping cart functionality
+- 🌐 Real-time Firebase Database
+- 📱 Responsive UI (Chakra UI)
+- ⚙️ State management with Redux Toolkit
 
-Real-time data updates via Firebase Realtime Database
+## 🛠️ Tech Stack
 
-State management with Redux Toolkit
+React 19, TypeScript, Firebase, Chakra UI, Redux Toolkit, Vite
 
-Fully responsive UI using Chakra UI
+## ⚙️ Setup
 
-🛠️ Tech Stack & Tools
-Technology	Purpose
-React	Frontend library for building UI
-TypeScript	Static typing and scalable code structure
-Redux Toolkit	State management
-Firebase	Backend (auth + real-time database)
-Chakra UI	Styling and responsive design system
-Vite	Build tool and dev server (via npm run dev)
-🧠 Key Concepts Demonstrated
-Authentication using Firebase
-
-Protected routes and user-specific data access
-
-Usage of custom hooks, reusable components, and utility functions
-
-Realtime syncing (cart/products)
-
-Environment variables and secure Firebase config
-
-Modern project structure with separation of concerns.
+```bash
+git clone https://github.com/kimbef/reakt2.git
+cd reakt2
+npm install
 
      ⚙️ Scripts You Should Know
 npm run dev       # Start development server (Vite)

@@ -69,7 +69,7 @@ const SignUp: React.FC = () => {
     const newErrors = { ...errors };
 
     if (!formData.displayName) {
-      newErrors.displayName = 'Name is required';
+      newErrors.displayName = 'Name is required';   /* to see validation open with arc browser or firefox for developers */
       isValid = false;
     }
 
@@ -112,6 +112,9 @@ const SignUp: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Simulate a 2-second delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       await dispatch(signUp({ 
         email: formData.email, 
         password: formData.password,
@@ -225,13 +228,15 @@ const SignUp: React.FC = () => {
                       type="submit"
                       colorScheme="blue"
                       width="full"
-                      isLoading={isLoading}
-                      loadingText="Creating account..."
                       size="lg"
                       fontSize="md"
                       py={6}
                     >
-                      Sign Up
+                      {isLoading ? (
+                        <div className="spinner"></div>
+                      ) : (
+                        "Sign Up"
+                      )}
                     </Button>
                   </VStack>
                 </Box>

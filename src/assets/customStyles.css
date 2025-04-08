@@ -1,27 +1,27 @@
-/* New Animated Background Gradient */
-.animated-gradient-bg {
-  background: transparent;
-  background-size: 200% 200%;
-  animation: newBackgroundAnimation 25s linear infinite;
-  font-family: 'Roboto', sans-serif; /* Add a readable font */
+.spinner {
+  background-image: linear-gradient(rgb(186, 66, 255) 35%,rgb(0, 225, 255));
+  width: 10px;
+  height: 10px;
+  animation: spinning82341 1.7s linear infinite;
+  text-align: center;
+  border-radius: 5px;
+  filter: blur(0%);
+  box-shadow: 0px -5px 20px 0px rgb(186, 66, 255), 0px 5px 20px 0px rgb(0, 225, 255);
 }
 
-/* Apply gradient text to product names and descriptions */
-.glass-card h2,
-.glass-card .chakra-text {
-  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
+.spinner1 {
+  background-color: rgb(36, 36, 36);
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  filter: blur(10px);
 }
 
-@keyframes newBackgroundAnimation {
+@keyframes spinning82341 {
   to {
-    background-position: 200% center;
+    transform: rotate(360deg);
   }
 }
-
-/* Apply neon effect to all buttons */
 .Button, .chakra-button {
   position: relative;
   overflow: hidden;

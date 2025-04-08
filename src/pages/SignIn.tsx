@@ -85,6 +85,9 @@ const SignIn: React.FC = () => {
     setIsLoading(true);
 
     try {
+      // Simulate a 2-second delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       await dispatch(signIn(formData)).unwrap();
       
       // Get the redirect path from location state, or default to '/'
@@ -169,13 +172,15 @@ const SignIn: React.FC = () => {
                       type="submit"
                       colorScheme="blue"
                       width="full"
-                      isLoading={isLoading}
-                      loadingText="Signing in..."
                       size="lg"
                       fontSize="md"
                       py={6}
                     >
-                      Sign In
+                      {isLoading ? (
+                        <div className="spinner"></div>
+                      ) : (
+                        "Sign In"
+                      )}
                     </Button>
                   </VStack>
                 </Box>
