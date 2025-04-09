@@ -28,8 +28,7 @@ const EditProduct: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [productLoading, setProductLoading] = useState(true);
-  const [formData, setFormData] = useState<Product>(
-    {
+  const [formData, setFormData] = useState<Product>({
     id: '',
     name: '',
     description: '',
@@ -38,6 +37,8 @@ const EditProduct: React.FC = () => {
     category: '',
     stock: 0,
     userId: '', // Assuming userId is not editable
+    likes: 0,
+    dislikes: 0,
   });
   const [errors, setErrors] = useState({
     name: '',
@@ -47,7 +48,7 @@ const EditProduct: React.FC = () => {
     category: '',
     stock: '',
   });
-  const product = useSelector((state: RootState) => state.products.selectedProduct);
+  const product = useSelector((state: RootState) => state.products?.selectedProduct);
 
   useEffect(() => {
     if (id) {

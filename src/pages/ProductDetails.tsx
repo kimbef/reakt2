@@ -35,33 +35,33 @@ const ProductDetailsComponent: React.FC = () => {
   const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
   const cartItems = useSelector(selectCartItems);
-  const { selectedProduct: product, isLoading, error } = useSelector(
-    (state: RootState) => state.products
-  );
+  const selectedProduct = useSelector((state: RootState) => state.products.selectedProduct);
+  const isLoading = useSelector((state: RootState) => state.products.isLoading);
+  const error = useSelector((state: RootState) => state.products.error);
 
-  const isFavorite = product && user ? user.favorites.includes(product.id) : false;
+  const isFavorite = selectedProduct && user ? user.favorites.includes(selectedProduct?.id) : false;
 
  const handleLike = () => {
-    if (product) {
-      const newLikes = product.likes + 1;
-      dispatch(updateProduct({ ...product, likes: newLikes }));
+    if (selectedProduct) {
+      const newLikes = selectedProduct?.likes + 1;
+      dispatch(updateProduct({ ...selectedProduct, likes: newLikes }));
     }
   };
 
   const handleDislike = () => {
-    if (product) {
-      const newDislikes = product.dislikes + 1;
-      dispatch(updateProduct({ ...product, dislikes: newDislikes }));
+    if (selectedProduct) {
+      const newDislikes = selectedProduct?.dislikes + 1;
+      dispatch(updateProduct({ ...selectedProduct, dislikes: newDislikes }));
     }
   };
 
   const handleAddToWishlist = () => {
-    if (product && user) {
-      dispatch(addToFavorites(product.id));
-      const isNowFavorite = !user.favorites.includes(product.id);
+    if (selectedProduct && user) {
+      dispatch(addToFavorites(selectedProduct.id));
+      const isNowFavorite = !user.favorites.includes(selectedProduct.id);
       toast({
         title: isNowFavorite ? 'Added to wishlist' : 'Removed from wishlist',
-        description: `${product.name} has been ${isNowFavorite ? 'added to' : 'removed from'} your wishlist`,
+        description: `${selectedProduct.name} has been ${isNowFavorite ? 'added to' : 'removed from'} your wishlist`,
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -86,20 +86,20 @@ const ProductDetailsComponent: React.FC = () => {
   }, [dispatch, id]);
 
   const handleAddToCart = () => {
-    if (product && user) {
-      const existingItem = cartItems.find(item => item.id === product.id);
+    if (selectedProduct && user) {
+      const existingItem = cartItems.find(item => item.id === selectedProduct.id);
       const updatedItems = existingItem
         ? cartItems.map(item =>
-            item.id === product.id
+            item.id === selectedProduct.id
               ? { ...item, quantity: item.quantity + 1 }
               : item
           )
-        : [...cartItems, { ...product, quantity: 1 }];
+        : [...cartItems, { ...selectedProduct, quantity: 1 }];
 
       dispatch(updateCart({ userId: user.uid, items: updatedItems }));
       toast({
         title: 'Added to cart',
-        description: `${product.name} has been added to your cart`,
+        description: `${selectedProduct.name} has been added to your cart`,
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -132,7 +132,7 @@ const ProductDetailsComponent: React.FC = () => {
                 <BreadcrumbLink onClick={() => navigate('/products')}>Products</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink>{product?.name || 'Product Details'}</BreadcrumbLink>
+                <BreadcrumbLink>{selectedProduct?.name || 'Product Details'}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
 
@@ -147,7 +147,7 @@ const ProductDetailsComponent: React.FC = () => {
                   <Skeleton height="40px" width="200px" />
                 </VStack>
               </Grid>
-            ) : product ? (
+            ) : selectedProduct ? (
               <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={8}>
                 <Box
                   className={isLightMode ? "glass-card" : "dark-glass-card"}
@@ -156,8 +156,8 @@ const ProductDetailsComponent: React.FC = () => {
                   position="relative"
                 >
                   <Image
-                    src={product.imageUrl}
-                    alt={product.name}
+                    src={selectedProduct?.imageUrl}
+                    alt={selectedProduct.name}
                     width="100%"
                     height="400px"
                     objectFit="cover"
@@ -168,33 +168,32 @@ const ProductDetailsComponent: React.FC = () => {
                     position="absolute"
                     top={4}
                     right={4}
-                    colorScheme={product.stock > 0 ? 'black' : 'red'}
+                    colorScheme={selectedProduct.stock > 0 ? 'black' : 'red'}
                     fontSize="md"
                     px={3}
                     py={1}
                     borderRadius="full"
                     className={isLightMode ? "glass-effect" : "dark-glass-effect"}
                   >
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
+                    {selectedProduct.stock > 0 ? `${selectedProduct.stock} in stock` : 'Out of Stock'}
                   </Badge>
                 </Box>
 
                 <VStack align="start" spacing={6} className={isLightMode ? "glass-card" : "dark-glass-card"} p={6} borderRadius="lg">
                   <Box width="100%">
                     <Text fontSize="3xl" fontWeight="bold" mb={2}>
-                      {product.name}
+                      {selectedProduct.name}
                     </Text>
                     <Text
-                      fontSize="2xl"
-                      fontWeight="bold"
+                      fontSize="2xl" fontWeight="bold"
                       color={useColorModeValue('blue.600', 'blue.300')}
                     >
-                      ${product.price}
+                      ${selectedProduct.price}
                     </Text>
                   </Box>
 
                   <Text fontSize="lg" color={isLightMode ? "gray.700" : "gray.300"}>
-                    {product.description}
+                    {selectedProduct.description}
                   </Text>
 
                   <Divider />
@@ -205,11 +204,11 @@ const ProductDetailsComponent: React.FC = () => {
                     </Text>
                     <Grid templateColumns="auto 1fr" gap={4}>
                       <Text fontWeight="medium">Category:</Text>
-                      <Text>{product.category}</Text>
+                      <Text>{selectedProduct.category}</Text>
                       <Text fontWeight="medium">SKU:</Text>
-                      <Text>{product.id}</Text>
+                      <Text>{selectedProduct.id}</Text>
                       <Text fontWeight="medium">Availability:</Text>
-                      <Text>{product.stock > 0 ? 'In Stock' : 'Out of Stock'}</Text>
+                      <Text>{selectedProduct.stock > 0 ? 'In Stock' : 'Out of Stock'}</Text>
                     </Grid>
                   </VStack>
 
@@ -219,7 +218,7 @@ const ProductDetailsComponent: React.FC = () => {
                       size="lg"
                       leftIcon={<FaShoppingCart />}
                       onClick={handleAddToCart}
-                      isDisabled={product.stock === 0}
+                      isDisabled={selectedProduct.stock === 0}
                       flex={1}
                       className="neon-button-blue"
                       _hover={{
@@ -249,14 +248,14 @@ const ProductDetailsComponent: React.FC = () => {
                       size="md"
                       onClick={handleLike}
                     >
-                      Like ({product.likes})
+                      Like ({selectedProduct.likes})
                     </Button>
                     <Button
                       colorScheme="red"
                       size="md"
                       onClick={handleDislike}
                     >
-                      Dislike ({product.dislikes})
+                      Dislike ({selectedProduct.dislikes})
                     </Button>
                      <IconButton
                       aria-label="Add to wishlist"
@@ -267,12 +266,12 @@ const ProductDetailsComponent: React.FC = () => {
                       />
                   </HStack>
                   
-                  {user?.uid === product.userId && (
+                  {user?.uid === selectedProduct.userId && (
                     <HStack spacing={4} pt={4} width="100%" justify="center">
-                      <Button colorScheme="blue" size="lg" onClick={() => navigate(`/edit-product/${product.id}`)}>
+                      <Button colorScheme="blue" size="lg" onClick={() => navigate(`/edit-product/${selectedProduct.id}`)}>
                         Edit Product
                       </Button>
-                      <Button colorScheme="red" size="lg" onClick={() => dispatch(deleteProduct(product.id)).then(() => navigate('/my-products'))}>
+                      <Button colorScheme="red" size="lg" onClick={() => dispatch(deleteProduct(selectedProduct.id)).then(() => navigate('/my-products'))}>
                         Delete Product
                       </Button>
                     </HStack>

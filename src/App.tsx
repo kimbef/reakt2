@@ -6,7 +6,7 @@ import { store } from './store';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import Layout from './components/Layout';
-import { initializeProducts } from './store/slices/productsSlice';
+import { fetchProducts } from './store/slices/productsSlice';
 import { AppDispatch } from './store';
 import CustomCursor from './components/CustomCursor';
 import './assets/customStyles.css';
@@ -23,12 +23,13 @@ import CreateProduct from './pages/CreateProduct.tsx';
 import MyProducts from './pages/MyProducts.tsx';
 import EditProduct from './pages/EditProduct.tsx';
 import Wishlist from './pages/Wishlist.tsx';
+import PaymentPage from './pages/PaymentPage';
 
 const AppContent = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(initializeProducts());
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   return (
@@ -102,6 +103,14 @@ const AppContent = () => {
           element={
             <ProtectedRoute>
               <EditProduct />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/payment"
+          element={
+            <ProtectedRoute>
+              <PaymentPage />
             </ProtectedRoute>
           }
         />

@@ -16,7 +16,7 @@ import {
 import { AddIcon, MinusIcon, DeleteIcon } from '@chakra-ui/icons';
 import { RootState, AppDispatch } from '../store';
 import { selectCartItems, selectCartTotal, updateCart } from '../store/slices/cartSlice';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { FaShoppingBag } from 'react-icons/fa';
 
 const Cart: React.FC = () => {
@@ -25,6 +25,7 @@ const Cart: React.FC = () => {
   const cartTotal = useSelector(selectCartTotal);
   const user = useSelector((state: RootState) => state.auth.user);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const cardBg = useColorModeValue('white', 'gray.800');
   const cardHoverBg = useColorModeValue('gray.50', 'gray.700');
@@ -210,13 +211,7 @@ const Cart: React.FC = () => {
             colorScheme="blue"
             size="lg"
             onClick={() => {
-              toast({
-                title: 'Coming Soon',
-                description: 'Checkout functionality will be available soon!',
-                status: 'info',
-                duration: 3000,
-                isClosable: true,
-              });
+              navigate('/payment');
             }}
             _hover={{
               transform: 'translateY(-2px)',
@@ -231,4 +226,4 @@ const Cart: React.FC = () => {
   );
 };
 
-export default Cart; 
+export default Cart;

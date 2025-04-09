@@ -46,10 +46,12 @@ export const initializeProducts = createAsyncThunk(
     try {
       console.log('Initializing products...');
       const productsRef = ref(db, 'products');
-      console.log('Database reference:', productsRef.toString());
+      const snapshot = await get(productsRef);
 
-      // Clear existing products before initializing
-      await set(productsRef, null);
+      if (snapshot.exists()) {
+        console.log('Products already exist, skipping initialization.');
+        return []; // Or return existing products if needed
+      }
 
       console.log('No products found, initializing with sample data...');
       const productsObject = sampleProducts.reduce((acc, product) => {
@@ -201,12 +203,72 @@ export const updateProduct = createAsyncThunk(
 }
 );
 
+export const deleteProduct = createAsyncThunk(
+  'products/deleteProduct',
+  async (id: string) => {
+    try {
+      const productRef = ref(db, `products/${id}`);
+      await set(productRef, null);
+      return id;
+    } catch (error) {
+      console.error('Firebase delete error:', error);
+      throw error;
+    }
+  }
+);
+
+export const purchaseProduct = createAsyncThunk(
+  'products/purchaseProduct',
+  async ({ productId, quantity }: { productId: string; quantity: number }) => {
+    try {
+      const productRef = ref(db, `products/${productId}`);
+      const snapshot = await get(productRef);
+
+      if (!snapshot.exists()) {
+        throw new Error('Product not found');
+      }
+
+      const product = snapshot.val();
+      const newStock = product.stock - quantity;
+
+      if (newStock < 0) {
+        throw new Error('Not enough stock');
+      }
+
+      const updatedProduct = { ...product, stock: newStock };
+      await set(productRef, updatedProduct);
+      return updatedProduct;
+    } catch (error) {
+      console.error('Error purchasing product:', error);
+      throw error;
+    }
+  }
+);
+
 const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(purchaseProduct.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(purchaseProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const index = state.items.findIndex(item => item.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+        if (state.selectedProduct?.id === action.payload.id) {
+          state.selectedProduct = action.payload;
+        }
+      })
+      .addCase(purchaseProduct.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Failed to purchase product';
+      })
       .addCase(updateProduct.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -305,19 +367,5 @@ const productsSlice = createSlice({
       });
   },
 });
-
-export const deleteProduct = createAsyncThunk(
-  'products/deleteProduct',
-  async (id: string) => {
-    try {
-      const productRef = ref(db, `products/${id}`);
-      await set(productRef, null);
-      return id;
-    } catch (error) {
-      console.error('Firebase delete error:', error);
-      throw error;
-    }
-  }
-);
 
 export default productsSlice.reducer;

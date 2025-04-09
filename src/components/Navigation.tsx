@@ -54,6 +54,7 @@ const Navigation: React.FC = () => {
   const dispatch = useDispatch();
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onToggle, onClose } = useDisclosure();
+  const showNavigation = location.pathname !== '/payment';
 
   const user = useSelector((state: RootState) => state.auth.user);
   const cartItems = useSelector(selectCartItems);
@@ -130,27 +131,29 @@ const Navigation: React.FC = () => {
           >
             ReaktShop
           </Text>
-          <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-            {publicLinks.map((link) => (
-              <Link
-                key={link.path}
-                as={RouterLink}
-                to={link.path}
-                px={2}
-                py={1}
-                rounded="md"
-                color="white"
-                _hover={{
-                  textDecoration: 'none',
-                  bg: 'rgba(255, 255, 255, 0.1)',
-                }}
-                bg={isActive(link.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent'}
-                fontWeight={isActive(link.path) ? 'semibold' : 'normal'}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </HStack>
+          {showNavigation && (
+            <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
+              {publicLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  as={RouterLink}
+                  to={link.path}
+                  px={2}
+                  py={1}
+                  rounded="md"
+                  color="white"
+                  _hover={{
+                    textDecoration: 'none',
+                    bg: 'rgba(255, 255, 255, 0.1)',
+                  }}
+                  bg={isActive(link.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent'}
+                  fontWeight={isActive(link.path) ? 'semibold' : 'normal'}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </HStack>
+          )}
         </HStack>
 
         <HStack spacing={4}>
