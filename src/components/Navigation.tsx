@@ -45,6 +45,7 @@ import { selectCartItems } from '../store/slices/cartSlice';
 const publicLinks = [
   { name: 'Home', path: '/' },
   { name: 'Products', path: '/products' },
+  { name: 'Wishlist', path: '/wishlist' },
 ];
 
 const Navigation: React.FC = () => {
@@ -250,4 +251,4 @@ const Navigation: React.FC = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;

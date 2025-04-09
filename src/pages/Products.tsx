@@ -247,6 +247,8 @@ const Products: React.FC = () => {
                       >
                         ${product.price}
                       </Text>
+                      
+                        
                       <Button
                         colorScheme="blue"
                         size="sm"
@@ -263,8 +265,9 @@ const Products: React.FC = () => {
                           color: 'white'
                         }}
                       >
-                        Add to Cart
+                        
                       </Button>
+                      
                     </HStack>
                   </VStack>
                 </Box>

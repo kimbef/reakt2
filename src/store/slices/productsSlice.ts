@@ -12,6 +12,8 @@ export interface Product {
   category: string;
   stock: number;
   imageUrl: string;
+  likes: number;
+  dislikes: number;
 }
 
 export interface NewProduct {
@@ -45,29 +47,19 @@ export const initializeProducts = createAsyncThunk(
       console.log('Initializing products...');
       const productsRef = ref(db, 'products');
       console.log('Database reference:', productsRef.toString());
-      
-      const snapshot = await get(productsRef);
-      console.log('Snapshot exists:', snapshot.exists());
-      
-      if (!snapshot.exists()) {
-        console.log('No products found, initializing with sample data...');
-        const productsObject = sampleProducts.reduce((acc, product) => {
-          acc[product.id] = product;
-          return acc;
-        }, {} as Record<string, Product>);
-        
-        await set(productsRef, productsObject);
-        console.log('Sample products initialized successfully');
-        return sampleProducts;
-      }
-      
-      console.log('Products already exist in database');
-      const productsData = snapshot.val();
-      return Object.keys(productsData).map(key => ({
-        id: key,
-        userId: productsData[key].userId || 'defaultUserId',
-        ...productsData[key]
-      }));
+
+      // Clear existing products before initializing
+      await set(productsRef, null);
+
+      console.log('No products found, initializing with sample data...');
+      const productsObject = sampleProducts.reduce((acc, product) => {
+        acc[product.id] = product;
+        return acc;
+      }, {} as Record<string, Product>);
+
+      await set(productsRef, productsObject);
+      console.log('Sample products initialized successfully');
+      return sampleProducts;
     } catch (error) {
       console.error('Firebase initialization error:', error);
       throw error;
@@ -81,17 +73,22 @@ export const fetchProducts = createAsyncThunk(
     try {
       const productsRef = ref(db, 'products');
       const snapshot = await get(productsRef);
-      
+
       if (!snapshot.exists()) {
         return [];
       }
-      
+
       const productsData = snapshot.val();
-      return Object.keys(productsData).map(key => ({
-        id: key,
-        userId: productsData[key].userId || 'defaultUserId',
-        ...productsData[key]
-      }));
+      return Object.keys(productsData).map(key => {
+        const productData = productsData[key];
+        return {
+          id: key,
+          userId: productData.userId || 'defaultUserId',
+          likes: productData.likes || 0,
+          dislikes: productData.dislikes || 0,
+          ...productData
+        };
+      });
     } catch (error) {
       console.error('Firebase fetch error:', error);
       throw error;
@@ -109,7 +106,12 @@ export const fetchProductById = createAsyncThunk(
       throw new Error('Product not found');
     }
     
-    return snapshot.val();
+    const productData = snapshot.val();
+    return {
+      ...productData,
+      likes: productData.likes || 0,
+      dislikes: productData.dislikes || 0,
+    };
   }
 );
 
@@ -127,6 +129,8 @@ export const createProduct = createAsyncThunk(
       const newProduct = {
         id: productId,
         userId: userId,
+        likes: 0,
+        dislikes: 0,
         ...product
       };
       
@@ -166,13 +170,35 @@ export const updateProduct = createAsyncThunk(
   async (updatedProduct: Product) => {
     try {
       const productRef = ref(db, `products/${updatedProduct.id}`);
-      await set(productRef, updatedProduct);
-      return updatedProduct;
-    } catch (error) {
-      console.error('Firebase update error:', error);
-      throw error;
+      const snapshot = await get(productRef);
+      if (!snapshot.exists()) {
+      throw new Error('Product not found');
     }
+
+    const product = snapshot.val();
+    const updatedProductData = { ...product };
+
+    const increment = 1;
+
+    if (updatedProduct.likes > product.likes) {
+      updatedProductData.likes = product.likes + increment;
+    }
+
+    if (updatedProduct.dislikes > product.dislikes) {
+      updatedProductData.dislikes = product.dislikes + increment;
+    }
+
+    await set(productRef, updatedProductData);
+    return {
+      ...updatedProduct,
+      likes: updatedProductData.likes,
+      dislikes: updatedProductData.dislikes,
+    };
+  } catch (error) {
+    console.error('Firebase update error:', error);
+    throw error;
   }
+}
 );
 
 const productsSlice = createSlice({

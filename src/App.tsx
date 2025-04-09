@@ -22,6 +22,7 @@ import Profile from './pages/Profile';
 import CreateProduct from './pages/CreateProduct.tsx';
 import MyProducts from './pages/MyProducts.tsx';
 import EditProduct from './pages/EditProduct.tsx';
+import Wishlist from './pages/Wishlist.tsx';
 
 const AppContent = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -88,6 +89,14 @@ const AppContent = () => {
                 <MyProducts />
                 </ProtectedRoute>
             }  />
+            <Route 
+                path='/wishlist'
+                element={
+                  <ProtectedRoute>
+                    <Wishlist />
+                  </ProtectedRoute>
+                }
+            />
          <Route
           path="/edit-product/:id"
           element={

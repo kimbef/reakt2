@@ -12,6 +12,7 @@ interface User {
   uid: string;
   email: string | null;
   displayName: string | null;
+  favorites: string[];
 }
 
 interface AuthState {
@@ -26,6 +27,10 @@ const initialState: AuthState = {
   error: null,
 };
 
+if (initialState.user) {
+  initialState.user.favorites = initialState.user.favorites || [];
+}
+
 export const signUp = createAsyncThunk(
   'auth/signUp',
   async ({ email, password, displayName }: { email: string; password: string; displayName: string }) => {
@@ -35,6 +40,7 @@ export const signUp = createAsyncThunk(
       uid: userCredential.user.uid,
       email: userCredential.user.email,
       displayName: userCredential.user.displayName,
+      favorites: []
     };
   }
 );
@@ -47,6 +53,7 @@ export const signIn = createAsyncThunk(
       uid: userCredential.user.uid,
       email: userCredential.user.email,
       displayName: userCredential.user.displayName,
+      favorites: []
     };
   }
 );
@@ -60,6 +67,7 @@ export const updateUserProfile = createAsyncThunk(
       uid: auth.currentUser.uid,
       email: auth.currentUser.email,
       displayName,
+      favorites: []
     };
   }
 );
@@ -76,12 +84,34 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<FirebaseUser | null>) => {
-      state.user = action.payload;
-      // Persist user data in localStorage
       if (action.payload) {
-        localStorage.setItem('user', JSON.stringify(action.payload));
+        const storedFavorites = JSON.parse(localStorage.getItem('user') || '{}').favorites || [];
+        const user = {
+          uid: action.payload.uid,
+          email: action.payload.email,
+          displayName: action.payload.displayName,
+          favorites: storedFavorites
+        };
+        state.user = user;
+        localStorage.setItem('user', JSON.stringify(user));
       } else {
+        state.user = null;
         localStorage.removeItem('user');
+      }
+    },
+    addToFavorites: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.favorites = state.user.favorites || [];
+        const productId = action.payload;
+        const index = state.user.favorites.indexOf(productId);
+        if (index === -1) {
+          // Add to favorites
+          state.user.favorites.push(productId);
+        } else {
+          // Remove from favorites
+          state.user.favorites.splice(index, 1);
+        }
+        localStorage.setItem('user', JSON.stringify(state.user));
       }
     },
   },
@@ -127,4 +157,5 @@ const authSlice = createSlice({
 });
 
 export const { setUser } = authSlice.actions;
-export default authSlice.reducer; 
+export const { addToFavorites } = authSlice.actions;
+export default authSlice.reducer;

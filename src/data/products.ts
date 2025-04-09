@@ -7,7 +7,9 @@ export const sampleProducts = [
     price: 299.99,
     category: 'Electronics',
     stock: 15,
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '2',
@@ -17,7 +19,9 @@ export const sampleProducts = [
     price: 199.99,
     category: 'Electronics',
     stock: 20,
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '3',
@@ -27,7 +31,9 @@ export const sampleProducts = [
     price: 49.99,
     category: 'Accessories',
     stock: 30,
-    imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '4',
@@ -37,7 +43,9 @@ export const sampleProducts = [
     price: 79.99,
     category: 'Accessories',
     stock: 25,
-    imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '5',
@@ -47,7 +55,9 @@ export const sampleProducts = [
     price: 89.99,
     category: 'Gaming',
     stock: 18,
-    imageUrl: 'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '6',
@@ -57,7 +67,9 @@ export const sampleProducts = [
     price: 149.99,
     category: 'Gaming',
     stock: 12,
-    imageUrl: 'https://images.unsplash.com/photo-1595044426077-d36d9236d54a?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1595044426077-d36d9236d54a?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '7',
@@ -67,7 +79,9 @@ export const sampleProducts = [
     price: 199.99,
     category: 'Home',
     stock: 10,
-    imageUrl: 'https://images.unsplash.com/photo-1520970014086-2208d157c9e2?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1520970014086-2208d157c9e2?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   },
   {
     id: '8',
@@ -77,6 +91,8 @@ export const sampleProducts = [
     price: 129.99,
     category: 'Electronics',
     stock: 22,
-    imageUrl: 'https://images.unsplash.com/photo-1589003077984-894e133dabab?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://images.unsplash.com/photo-1589003077984-894e133dabab?auto=format&fit=crop&w=800&q=80',
+    likes: 0,
+    dislikes: 0
   }
 ];

@@ -28,7 +28,8 @@ const EditProduct: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [productLoading, setProductLoading] = useState(true);
-  const [formData, setFormData] = useState<Product>({
+  const [formData, setFormData] = useState<Product>(
+    {
     id: '',
     name: '',
     description: '',

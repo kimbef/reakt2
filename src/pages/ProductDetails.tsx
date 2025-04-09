@@ -21,22 +21,61 @@ import {
   Grid,
 } from '@chakra-ui/react';
 import { ChevronLeftIcon } from '@chakra-ui/icons';
-import { FaShoppingCart } from 'react-icons/fa';
+import { FaShoppingCart, FaHeart } from 'react-icons/fa';
 import { AppDispatch, RootState } from '../store';
 import { fetchProductById } from '../store/slices/productsSlice';
 import { updateCart, selectCartItems } from '../store/slices/cartSlice';
-import { deleteProduct } from '../store/slices/productsSlice';
-const ProductDetails: React.FC = () => {
+import { deleteProduct, updateProduct } from '../store/slices/productsSlice';
+import { addToFavorites } from '../store/slices/authSlice';
+
+const ProductDetailsComponent: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const toast = useToast();
   const user = useSelector((state: RootState) => state.auth.user);
   const cartItems = useSelector(selectCartItems);
-
   const { selectedProduct: product, isLoading, error } = useSelector(
     (state: RootState) => state.products
   );
+
+  const isFavorite = product && user ? user.favorites.includes(product.id) : false;
+
+ const handleLike = () => {
+    if (product) {
+      const newLikes = product.likes + 1;
+      dispatch(updateProduct({ ...product, likes: newLikes }));
+    }
+  };
+
+  const handleDislike = () => {
+    if (product) {
+      const newDislikes = product.dislikes + 1;
+      dispatch(updateProduct({ ...product, dislikes: newDislikes }));
+    }
+  };
+
+  const handleAddToWishlist = () => {
+    if (product && user) {
+      dispatch(addToFavorites(product.id));
+      const isNowFavorite = !user.favorites.includes(product.id);
+      toast({
+        title: isNowFavorite ? 'Added to wishlist' : 'Removed from wishlist',
+        description: `${product.name} has been ${isNowFavorite ? 'added to' : 'removed from'} your wishlist`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to add items to your wishlist',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   const isLightMode = useColorModeValue(true, false);
 
@@ -203,6 +242,31 @@ const ProductDetails: React.FC = () => {
                       }}
                     />
                   </HStack>
+                  
+                  <HStack spacing={4} pt={4} width="100%" >
+                    <Button
+                      colorScheme="green"
+                      size="md"
+                      onClick={handleLike}
+                    >
+                      Like ({product.likes})
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      size="md"
+                      onClick={handleDislike}
+                    >
+                      Dislike ({product.dislikes})
+                    </Button>
+                     <IconButton
+                      aria-label="Add to wishlist"
+                        icon={<FaHeart color={isFavorite ? 'gray' : 'red'} />}
+                        colorScheme={isFavorite ? 'gray' : 'red'}
+                        size="md"
+                        onClick={handleAddToWishlist}
+                      />
+                  </HStack>
+                  
                   {user?.uid === product.userId && (
                     <HStack spacing={4} pt={4} width="100%" justify="center">
                       <Button colorScheme="blue" size="lg" onClick={() => navigate(`/edit-product/${product.id}`)}>
@@ -223,7 +287,6 @@ const ProductDetails: React.FC = () => {
       </Container>
     </Box>
   );
-
 }
 
-export default ProductDetails;
+export default ProductDetailsComponent;
