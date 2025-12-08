@@ -1,0 +1,317 @@
+.spinner {
+  background-image: linear-gradient(rgb(186, 66, 255) 35%,rgb(0, 225, 255));
+  width: 10px;
+  height: 10px;
+  animation: spinning82341 1.7s linear infinite;
+  text-align: center;
+  border-radius: 5px;
+  filter: blur(0%);
+  box-shadow: 0px -5px 20px 0px rgb(186, 66, 255), 0px 5px 20px 0px rgb(0, 225, 255);
+}
+
+.spinner1 {
+  background-color: rgb(36, 36, 36);
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  filter: blur(10px);
+}
+
+@keyframes spinning82341 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.Button, .chakra-button {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease, text-shadow 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease; /* Comprehensive transitions */
+  color: #fff;
+  border-width: 2px !important; /* Thicker borders for neon effect */
+  border-style: solid !important;
+  border-radius: 8px; /* Slightly rounded buttons */
+  padding: 0.75rem 1.5rem; /* Adjusted padding */
+  z-index: 1; /* Ensure text is above pseudo-elements */
+  background-color: rgba(255, 255, 255, 0.1); /* Add a subtle background color */
+}
+
+.Button:hover, .Button:focus, .chakra-button:hover, .chakra-button:focus {
+  color: #e0f7fa !important; /* Light text color on hover */
+  text-shadow: 0 0 8px rgba(224, 247, 250, 0.9), 0 0 15px rgba(224, 247, 250, 0.9); /* Stronger text shadow */
+  box-shadow: 0 0 8px rgba(var(--neon-color), 0.7), /* Use CSS variables for neon colors */
+              0 0 15px rgba(var(--neon-color), 0.6),
+              0 0 20px rgba(var(--neon-color), 0.5),
+              inset 0 0 8px rgba(var(--neon-color), 0.1) !important;
+  border-color: var(--neon-color) !important; /* Use CSS variables for border color */
+  transform: scale(1.07); /* Slightly more scale on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Add a subtle background color on hover */
+}
+
+body.futuristic-body-bg {
+  background: linear-gradient(to right,
+    #030205, /* Deep violet start */
+    #eb9d00, /* Medium violet */
+    #1d06f1 /* Light violet */
+  );
+  background-size: 200% 200%;
+  animation: violetBackgroundAnimation 10s linear infinite;
+}
+/* Gradient Text Animation */
+.gradient-text {
+  background-size: cover;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: #651fff;
+  transition: all 0.3s ease;
+}
+
+.gradient-text:hover {
+  text-shadow: 0 0 5px rgba(156, 39, 176, 0.8); /* Neon glow on hover */
+}
+
+/* Hero Section Futuristic Gradient Text */
+.hero-gradient-text {
+  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
+  -webkit-text-fill-color: #54a003;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-weight: bolder; /* Even stronger for hero text */
+  letter-spacing: 1.2px; /* Slightly wider spacing for impact */
+  animation: heroTextPulse 10s linear infinite; /* Subtle pulse animation */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  background: linear-gradient(to right,#ff69b4, #00bfff); /* Pink to Blue */
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@keyframes heroTextPulse {
+  0%, 100% { text-shadow: none; }
+  100% { text-shadow: 0 0 5px rgb(251, 251, 251); } /* Cyan glow pulse */
+}
+
+/* Futuristic Navbar Gradient Background */
+.navbar-gradient {
+  background: linear-gradient(to right,
+    #29bbff, 
+    #651fff
+  );
+  background-size: 150% 150%;
+  animation: navbarAnimation 40s linear infinite; /* Slower, smoother navbar animation */
+  backdrop-filter: blur(12px) saturate(150%); /* More intense blur and saturation */
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Thicker, brighter border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+@keyframes navbarAnimation {
+  0% { background-position: 200% 0%; }
+  100% { background-position: -200% 0%; }
+}
+
+
+body.futuristic-body-bg {
+  background: linear-gradient(to right,
+    
+    #542079,/* Medium violet */
+    #0388fd,
+    #f1efed /* Light violet */
+    
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 5s linear infinite;
+}
+
+@keyframes gradient-shift {
+  to {
+    background-position-x: -100px;
+  }
+}
+/* Glassmorphism Effects - Refined */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.4); /* Slightly more transparent */
+  backdrop-filter: blur(15px) saturate(120%); /* Increased blur and saturation */
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.35); /* Brighter border */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); /* Deeper shadow */
+  border-radius: 12px; /* More rounded corners */
+  transition: all 0.3s ease;
+}
+
+/* Hero section specific glass effect - Intensified - Light Mode Adjustment */
+.hero-glass-effect {
+  background: cover; /* Solid white background for hero glass */
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(12, 11, 11, 0.5); /* White border */
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+  border-radius: 15px;
+  background-clip: text;
+  color: transparent; /* Ensure dark text for readability on white */
+}
+
+.glass-card {
+  background: white; /* Solid white background for glass cards */
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* White border */
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background-color 0.3s ease-out;
+  color: #333; /* Ensure dark text for readability on white */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Add a subtle border */
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card img {
+  transition: transform 0.5s ease;
+}
+
+.glass-card:hover img {
+  transform: scale(1.05);
+}
+
+
+/* Dark theme adjustments - More Cyberpunk - No Change Needed */
+
+
+.glass-card.dark-mode {
+  background-color: #000;
+  color: #fff;
+}
+
+.dark-hero-glass-effect {
+  background: rgba(27, 37, 51, 0.7);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(49, 63, 81, 0.5);
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+}
+
+.dark-glass-effect {
+  background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(40, 40, 40, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+}
+
+
+/* Custom Cursor - Neon Accent */
+.custom-cursor {
+  cursor: none;
+}
+
+.cursor-dot,
+.cursor-outline {
+  z-index: 9999;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-out; /* Smoother cursor transitions */
+}
+
+.cursor-dot {
+  width: 6px; /* Slightly larger dot */
+  height: 6px;
+  background-color: #f29900; /* Neon cyan cursor dot */
+  box-shadow: 0 0 5px #00f2ea, 0 0 10px #00f2ea; /* Neon glow for the dot */
+}
+
+.cursor-outline {
+  width: 14px; /* Slightly larger outline */
+  height: 14px;
+  background-color: goldenrod;
+  border: 2px solid #bb86fc; /* Neon purple outline */
+}
+
+/* When hovering - Cursor Grow & Neon */
+.cursor-grow .cursor-outline {
+  transform: translate(-50%, -50%) scale(1.5); /* More pronounced grow */
+  background-color: rgba(179, 136, 255, 0.2); /* Neon purple fill on hover */
+  border-color: #bb86fc;
+  box-shadow: 0 0 10px #bb86fc; /* Neon glow on hover outline */
+}
+.cursor-grow .cursor-dot {
+  background-color: #64ffda; /* Neon cyan dot on hover */
+  box-shadow: 0 0 5px #64ffda, 0 0 10px #64ffda; /* Neon glow for dot on hover */
+}
+
+
+/* Neon Button Effects - Enhanced Glow */
+.neon-button-blue,
+.neon-button-purple,
+.neon-button-pink {
+  position: relative;
+  overflow: hidden;
+  transition: color 0.3s ease, text-shadow 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease; /* Comprehensive transitions */
+  color: #fff;
+  border-width: 2px !important; /* Thicker borders for neon effect */
+  border-style: solid !important;
+  border-radius: 8px; /* Slightly rounded buttons */
+  padding: 0.75rem 1.5rem; /* Adjusted padding */
+  z-index: 1; /* Ensure text is above pseudo-elements */
+  background-color: rgba(255, 255, 255, 0.1); /* Add a subtle background color */
+}
+
+/* Common hover and focus styles for all neon buttons */
+.neon-button-blue:hover, .neon-button-blue:focus,
+.neon-button-purple:hover, .neon-button-purple:focus,
+.neon-button-pink:hover, .neon-button-pink:focus {
+  color: #e0f7fa !important; /* Light text color on hover */
+  text-shadow: 0 0 8px rgba(224, 247, 250, 0.9), 0 0 15px rgba(224, 247, 250, 0.9); /* Stronger text shadow */
+  box-shadow: 0 0 8px rgba(var(--neon-color), 0.7), /* Use CSS variables for neon colors */
+              0 0 15px rgba(var(--neon-color), 0.6),
+              0 0 20px rgba(var(--neon-color), 0.5),
+              inset 0 0 8px rgba(var(--neon-color), 0.1) !important;
+  border-color: var(--neon-color) !important; /* Use CSS variables for border color */
+  transform: scale(1.07); /* Slightly more scale on hover */
+  background-color: rgba(255, 255, 255, 0.2); /* Add a subtle background color on hover */
+}
+
+/* Specific neon button colors using CSS variables */
+.neon-button-blue {
+  --neon-color: 100, 149, 237; /* Cornflower Blue */
+  border-color: rgba(var(--neon-color), 1) !important;
+}
+
+.neon-button-purple {
+  --neon-color: 178, 102, 255; /* Dark Orchid */
+  border-color: rgba(var(--neon-color), 0.7) !important;
+}
+
+.neon-button-pink {
+  --neon-color: 255, 105, 180; /* Hot Pink */
+  border-color: rgba(var(--neon-color), 0.7) !important;
+}
+
+
+/* Geometric Pattern Overlay Example (Can be applied to specific sections) */
+.geometric-overlay {
+  position: relative; /* To contain the pseudo-element */
+  overflow: hidden; /* Clip the pattern if needed */
+}
+
+.geometric-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 10px, transparent 10px, transparent 20px); /* Example pattern */
+  opacity: 0.8; /* Adjust opacity as needed */
+  z-index: -1; /* Behind the content */
+}
