@@ -6,6 +6,7 @@ import { store } from './store';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import { fetchProducts } from './store/slices/productsSlice';
 import { AppDispatch } from './store';
 import CustomCursor from './components/CustomCursor';
@@ -33,71 +34,72 @@ const AppContent = () => {
   }, [dispatch]);
 
   return (
-    <Layout>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        
-        {/* Auth Routes */}
-        <Route
-          path="/signin"
-          element={
-            <PublicRoute>
-              <SignIn />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <SignUp />
-            </PublicRoute>
-          }
-        />
+    <ErrorBoundary>
+      <Layout>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          
+          {/* Auth Routes */}
+          <Route
+            path="/signin"
+            element={
+              <PublicRoute>
+                <SignIn />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <SignUp />
+              </PublicRoute>
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path="/create-product"
-          element={
-            <ProtectedRoute>
-              <CreateProduct />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-            path="/my-products"
+          {/* Protected Routes */}
+          <Route
+            path="/create-product"
             element={
               <ProtectedRoute>
-                <MyProducts />
-                </ProtectedRoute>
-            }  />
-            <Route 
-                path='/wishlist'
-                element={
-                  <ProtectedRoute>
-                    <Wishlist />
+                <CreateProduct />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+              path="/my-products"
+              element={
+                <ProtectedRoute>
+                  <MyProducts />
                   </ProtectedRoute>
-                }
-            />
+              }  />
+              <Route 
+                  path='/wishlist'
+                  element={
+                    <ProtectedRoute>
+                      <Wishlist />
+                    </ProtectedRoute>
+                  }
+              />
          <Route
           path="/edit-product/:id"
           element={

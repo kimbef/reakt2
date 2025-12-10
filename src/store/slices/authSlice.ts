@@ -17,6 +17,7 @@ interface User {
 
 interface AuthState {
   user: User | null;
+  isLoading: boolean;
   error: string | null;
 }
 
@@ -24,6 +25,7 @@ interface AuthState {
 const storedUser = localStorage.getItem('user');
 const initialState: AuthState = {
   user: storedUser ? JSON.parse(storedUser) : null,
+  isLoading: false,
   error: null,
 };
 
@@ -33,49 +35,69 @@ if (initialState.user) {
 
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async ({ email, password, displayName }: { email: string; password: string; displayName: string }) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(userCredential.user, { displayName });
-    return {
-      uid: userCredential.user.uid,
-      email: userCredential.user.email,
-      displayName: userCredential.user.displayName,
-      favorites: []
-    };
+  async ({ email, password, displayName }: { email: string; password: string; displayName: string }, { rejectWithValue }) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName });
+      return {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        favorites: []
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to sign up';
+      return rejectWithValue(message);
+    }
   }
 );
 
 export const signIn = createAsyncThunk(
   'auth/signIn',
-  async ({ email, password }: { email: string; password: string }) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return {
-      uid: userCredential.user.uid,
-      email: userCredential.user.email,
-      displayName: userCredential.user.displayName,
-      favorites: []
-    };
+  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        favorites: []
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to sign in';
+      return rejectWithValue(message);
+    }
   }
 );
 
 export const updateUserProfile = createAsyncThunk(
   'auth/updateProfile',
-  async ({ displayName }: { displayName: string }) => {
-    if (!auth.currentUser) throw new Error('No user is signed in');
-    await updateProfile(auth.currentUser, { displayName });
-    return {
-      uid: auth.currentUser.uid,
-      email: auth.currentUser.email,
-      displayName,
-      favorites: []
-    };
+  async ({ displayName }: { displayName: string }, { rejectWithValue }) => {
+    try {
+      if (!auth.currentUser) throw new Error('No user is signed in');
+      await updateProfile(auth.currentUser, { displayName });
+      return {
+        uid: auth.currentUser.uid,
+        email: auth.currentUser.email,
+        displayName,
+        favorites: []
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update profile';
+      return rejectWithValue(message);
+    }
   }
 );
 
 export const logOut = createAsyncThunk(
   'auth/logOut',
-  async () => {
-    await signOut(auth);
+  async (_, { rejectWithValue }) => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to log out';
+      return rejectWithValue(message);
+    }
   }
 );
 
@@ -118,40 +140,56 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(signUp.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(signUp.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(signUp.rejected, (state, action) => {
-        state.error = action.error.message || 'Failed to sign up';
+        state.isLoading = false;
+        state.error = action.payload as string || 'Failed to sign up';
       })
       .addCase(signIn.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(signIn.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(signIn.rejected, (state, action) => {
-        state.error = action.error.message || 'Failed to sign in';
+        state.isLoading = false;
+        state.error = action.payload as string || 'Failed to sign in';
       })
       .addCase(updateUserProfile.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
-        state.error = action.error.message || 'Failed to update profile';
+        state.isLoading = false;
+        state.error = action.payload as string || 'Failed to update profile';
       })
       .addCase(logOut.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(logOut.fulfilled, (state) => {
+        state.isLoading = false;
         state.user = null;
+        localStorage.removeItem('user');
       })
       .addCase(logOut.rejected, (state, action) => {
-        state.error = action.error.message || 'Failed to log out';
+        state.isLoading = false;
+        state.error = action.payload as string || 'Failed to log out';
       });
   },
 });

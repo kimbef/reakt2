@@ -39,7 +39,7 @@ export const fetchCart = createAsyncThunk(
 // Update cart in Firebase
 export const updateCart = createAsyncThunk(
   'cart/updateCart',
-  async ({ userId, items }: { userId: string; items: CartItem[] }, { dispatch, getState }) => {
+  async ({ userId, items }: { userId: string; items: CartItem[] }, { dispatch, getState, rejectWithValue }) => {
     try {
       // First, update the cart
       const cartRef = ref(db, `carts/${userId}`);
@@ -66,8 +66,9 @@ export const updateCart = createAsyncThunk(
 
       return items;
     } catch (error) {
-      console.error('Error updating cart:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to update cart';
+      return rejectWithValue(message);
+    }
     }
   }
 );
@@ -104,7 +105,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || 'Failed to fetch cart';
+        state.error = action.payload as string || 'Failed to fetch cart';
       })
       // Update Cart
       .addCase(updateCart.pending, (state) => {
@@ -117,7 +118,7 @@ const cartSlice = createSlice({
       })
       .addCase(updateCart.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || 'Failed to update cart';
+        state.error = action.payload as string || 'Failed to update cart';
       })
       // Clear Cart
       .addCase(clearCart.pending, (state) => {

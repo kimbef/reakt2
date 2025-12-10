@@ -42,7 +42,7 @@ const initialState: ProductsState = {
 // Initialize products in Firebase if they don't exist
 export const initializeProducts = createAsyncThunk(
   'products/initialize',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       console.log('Initializing products...');
       const productsRef = ref(db, 'products');
@@ -50,7 +50,7 @@ export const initializeProducts = createAsyncThunk(
 
       if (snapshot.exists()) {
         console.log('Products already exist, skipping initialization.');
-        return []; // Or return existing products if needed
+        return [];
       }
 
       console.log('No products found, initializing with sample data...');
@@ -63,15 +63,15 @@ export const initializeProducts = createAsyncThunk(
       console.log('Sample products initialized successfully');
       return sampleProducts;
     } catch (error) {
-      console.error('Firebase initialization error:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to initialize products';
+      return rejectWithValue(message);
     }
   }
 );
 
 export const fetchProducts = createAsyncThunk(
   'products/fetchProducts',
-  async () => {
+  async (_, { rejectWithValue }) => {
     try {
       const productsRef = ref(db, 'products');
       const snapshot = await get(productsRef);
@@ -92,34 +92,39 @@ export const fetchProducts = createAsyncThunk(
         };
       });
     } catch (error) {
-      console.error('Firebase fetch error:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to fetch products';
+      return rejectWithValue(message);
     }
   }
 );
 
 export const fetchProductById = createAsyncThunk(
   'products/fetchProductById',
-  async (productId: string) => {
-    const productRef = ref(db, `products/${productId}`);
-    const snapshot = await get(productRef);
-    
-    if (!snapshot.exists()) {
-      throw new Error('Product not found');
+  async (productId: string, { rejectWithValue }) => {
+    try {
+      const productRef = ref(db, `products/${productId}`);
+      const snapshot = await get(productRef);
+      
+      if (!snapshot.exists()) {
+        return rejectWithValue('Product not found');
+      }
+      
+      const productData = snapshot.val();
+      return {
+        ...productData,
+        likes: productData.likes || 0,
+        dislikes: productData.dislikes || 0,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to fetch product';
+      return rejectWithValue(message);
     }
-    
-    const productData = snapshot.val();
-    return {
-      ...productData,
-      likes: productData.likes || 0,
-      dislikes: productData.dislikes || 0,
-    };
   }
 );
 
 export const createProduct = createAsyncThunk(
   'products/createProduct',
-  async (product: NewProduct, { getState }) => {
+  async (product: NewProduct, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { auth: { user: { uid: string } } };
       const userId = state.auth.user.uid;
@@ -139,21 +144,21 @@ export const createProduct = createAsyncThunk(
       await set(newProductRef, newProduct);
       return newProduct;
     } catch (error) {
-      console.error('Firebase create error:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to create product';
+      return rejectWithValue(message);
     }
   }
 );
 
 export const updateProductStock = createAsyncThunk(
   'products/updateProductStock',
-  async ({ productId, newStock }: { productId: string; newStock: number }) => {
+  async ({ productId, newStock }: { productId: string; newStock: number }, { rejectWithValue }) => {
     try {
       const productRef = ref(db, `products/${productId}`);
       const snapshot = await get(productRef);
       
       if (!snapshot.exists()) {
-        throw new Error('Product not found');
+        return rejectWithValue('Product not found');
       }
       
       const product = snapshot.val();
@@ -161,86 +166,86 @@ export const updateProductStock = createAsyncThunk(
       await set(productRef, updatedProduct);
       return updatedProduct;
     } catch (error) {
-      console.error('Error updating product stock:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to update product stock';
+      return rejectWithValue(message);
     }
   }
 );
 
 export const updateProduct = createAsyncThunk(
   'products/updateProduct',
-  async (updatedProduct: Product) => {
+  async (updatedProduct: Product, { rejectWithValue }) => {
     try {
       const productRef = ref(db, `products/${updatedProduct.id}`);
       const snapshot = await get(productRef);
       if (!snapshot.exists()) {
-      throw new Error('Product not found');
+        return rejectWithValue('Product not found');
+      }
+
+      const product = snapshot.val();
+      const updatedProductData = { ...product };
+
+      const increment = 1;
+
+      if (updatedProduct.likes > product.likes) {
+        updatedProductData.likes = product.likes + increment;
+      }
+
+      if (updatedProduct.dislikes > product.dislikes) {
+        updatedProductData.dislikes = product.dislikes + increment;
+      }
+
+      await set(productRef, updatedProductData);
+      return {
+        ...updatedProduct,
+        likes: updatedProductData.likes,
+        dislikes: updatedProductData.dislikes,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update product';
+      return rejectWithValue(message);
     }
-
-    const product = snapshot.val();
-    const updatedProductData = { ...product };
-
-    const increment = 1;
-
-    if (updatedProduct.likes > product.likes) {
-      updatedProductData.likes = product.likes + increment;
-    }
-
-    if (updatedProduct.dislikes > product.dislikes) {
-      updatedProductData.dislikes = product.dislikes + increment;
-    }
-
-    await set(productRef, updatedProductData);
-    return {
-      ...updatedProduct,
-      likes: updatedProductData.likes,
-      dislikes: updatedProductData.dislikes,
-    };
-  } catch (error) {
-    console.error('Firebase update error:', error);
-    throw error;
   }
-}
 );
 
 export const deleteProduct = createAsyncThunk(
   'products/deleteProduct',
-  async (id: string) => {
+  async (id: string, { rejectWithValue }) => {
     try {
       const productRef = ref(db, `products/${id}`);
       await set(productRef, null);
       return id;
     } catch (error) {
-      console.error('Firebase delete error:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to delete product';
+      return rejectWithValue(message);
     }
   }
 );
 
 export const purchaseProduct = createAsyncThunk(
   'products/purchaseProduct',
-  async ({ productId, quantity }: { productId: string; quantity: number }) => {
+  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
     try {
       const productRef = ref(db, `products/${productId}`);
       const snapshot = await get(productRef);
 
       if (!snapshot.exists()) {
-        throw new Error('Product not found');
+        return rejectWithValue('Product not found');
       }
 
       const product = snapshot.val();
       const newStock = product.stock - quantity;
 
       if (newStock < 0) {
-        throw new Error('Not enough stock');
+        return rejectWithValue('Not enough stock');
       }
 
       const updatedProduct = { ...product, stock: newStock };
       await set(productRef, updatedProduct);
       return updatedProduct;
     } catch (error) {
-      console.error('Error purchasing product:', error);
-      throw error;
+      const message = error instanceof Error ? error.message : 'Failed to purchase product';
+      return rejectWithValue(message);
     }
   }
 );
@@ -267,7 +272,7 @@ const productsSlice = createSlice({
       })
       .addCase(purchaseProduct.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || 'Failed to purchase product';
+        state.error = action.payload as string || 'Failed to purchase product';
       })
       .addCase(updateProduct.pending, (state) => {
         state.isLoading = true;
@@ -285,7 +290,7 @@ const productsSlice = createSlice({
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error.message || 'Failed to update product';
+        state.error = action.payload as string || 'Failed to update product';
       })
       .addCase(initializeProducts.pending, (state) => {
         state.isLoading = true;

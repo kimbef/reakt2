@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
@@ -12,37 +12,70 @@ import {
   useToast,
   useColorModeValue,
   Badge,
+  Alert,
+  AlertIcon,
+  Spinner,
 } from '@chakra-ui/react';
-import { AddIcon, MinusIcon, DeleteIcon } from '@chakra-ui/icons';
+import { AddIcon, MinusIcon, DeleteIcon, WarningIcon } from '@chakra-ui/icons';
 import { RootState, AppDispatch } from '../store';
 import { selectCartItems, selectCartTotal, updateCart } from '../store/slices/cartSlice';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { FaShoppingBag } from 'react-icons/fa';
+import { formatCurrency } from '../utils/helpers';
 
 const Cart: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
   const user = useSelector((state: RootState) => state.auth.user);
+  const { isLoading: cartLoading, error: cartError } = useSelector((state: RootState) => state.cart);
   const toast = useToast();
   const navigate = useNavigate();
+  const [updatingItemId, setUpdatingItemId] = useState<string | null>(null);
 
   const cardBg = useColorModeValue('white', 'gray.800');
   const cardHoverBg = useColorModeValue('gray.50', 'gray.700');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   const handleUpdateQuantity = async (productId: string, newQuantity: number) => {
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please sign in to update your cart',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate('/signin');
+      return;
+    }
+
+    if (newQuantity < 0) return;
+
+    setUpdatingItemId(productId);
 
     try {
-      const updatedItems = cartItems.map(item => {
-        if (item.id === productId) {
-          return { ...item, quantity: Math.max(0, newQuantity) };
-        }
-        return item;
-      }).filter(item => item.quantity > 0);
+      const updatedItems = cartItems
+        .map(item => {
+          if (item.id === productId) {
+            // Ensure quantity doesn't exceed stock
+            return { ...item, quantity: Math.min(newQuantity, item.stock) };
+          }
+          return item;
+        })
+        .filter(item => item.quantity > 0);
 
       await dispatch(updateCart({ userId: user.uid, items: updatedItems })).unwrap();
+
+      if (newQuantity === 0) {
+        toast({
+          title: 'Item Removed',
+          description: 'Product removed from cart',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
     } catch (error) {
       toast({
         title: 'Error',
@@ -51,12 +84,15 @@ const Cart: React.FC = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setUpdatingItemId(null);
     }
   };
 
+  // Empty cart state
   if (!cartItems.length) {
     return (
-      <VStack spacing={8} align="center" w="full">
+      <VStack spacing={8} align="center" w="full" py={10}>
         <Box
           bg={cardBg}
           borderRadius="lg"
@@ -93,10 +129,22 @@ const Cart: React.FC = () => {
   }
 
   return (
-    <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={8} w="full">
+    <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={8} w="full" py={6}>
       <VStack align="stretch" spacing={6}>
         <Text fontSize="2xl" fontWeight="bold">Shopping Cart ({cartItems.length} items)</Text>
         
+        {/* Cart Error Alert */}
+        {cartError && (
+          <Alert status="error" borderRadius="lg">
+            <AlertIcon />
+            <VStack align="start" w="full">
+              <Text fontWeight="bold">Failed to update cart</Text>
+              <Text fontSize="sm">{cartError}</Text>
+            </VStack>
+          </Alert>
+        )}
+        
+        {/* Cart Items */}
         {cartItems.map((item) => (
           <Box
             key={item.id}
@@ -108,8 +156,10 @@ const Cart: React.FC = () => {
             borderColor={borderColor}
             transition="all 0.3s"
             _hover={{ transform: 'translateY(-2px)', shadow: 'lg', bg: cardHoverBg }}
+            opacity={updatingItemId === item.id ? 0.6 : 1}
           >
             <Grid templateColumns={{ base: '1fr', sm: '150px 1fr auto auto' }} gap={6} p={4}>
+              {/* Product Image */}
               <Image
                 src={item.imageUrl}
                 alt={item.name}
@@ -117,30 +167,41 @@ const Cart: React.FC = () => {
                 width="150px"
                 objectFit="cover"
                 borderRadius="md"
+                loading="lazy"
               />
               
+              {/* Product Details */}
               <VStack align="start" spacing={2}>
-                <Text fontSize="xl" fontWeight="bold">
+                <Text fontSize="xl" fontWeight="bold" noOfLines={2}>
                   {item.name}
                 </Text>
-                <Badge colorScheme="green" px={2} py={1} borderRadius="full">
-                  In Stock
+                <Badge
+                  colorScheme={item.stock > 0 ? 'green' : 'red'}
+                  px={2}
+                  py={1}
+                  borderRadius="full"
+                >
+                  {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
                 </Badge>
-                <Text color="gray.500">
-                  ${item.price.toFixed(2)}
+                <Text color="gray.500" fontSize="sm">
+                  Unit Price: {formatCurrency(item.price)}
                 </Text>
               </VStack>
 
+              {/* Quantity Controls */}
               <HStack spacing={2}>
                 <IconButton
                   aria-label="Decrease quantity"
-                  icon={<MinusIcon />}
+                  icon={updatingItemId === item.id ? <Spinner size="sm" /> : <MinusIcon />}
                   onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                   colorScheme="blue"
                   variant="outline"
                   size="sm"
+                  isDisabled={updatingItemId === item.id || item.quantity === 1}
                 />
-                <Text px={3}>{item.quantity}</Text>
+                <Text px={3} fontWeight="bold" minW="30px" textAlign="center">
+                  {item.quantity}
+                </Text>
                 <IconButton
                   aria-label="Increase quantity"
                   icon={<AddIcon />}
@@ -148,16 +209,19 @@ const Cart: React.FC = () => {
                   colorScheme="blue"
                   variant="outline"
                   size="sm"
+                  isDisabled={updatingItemId === item.id || item.quantity >= item.stock}
+                  title={item.quantity >= item.stock ? 'Stock limit reached' : ''}
                 />
               </HStack>
 
+              {/* Item Total */}
               <VStack align="end" spacing={2}>
                 <Text
                   fontSize="xl"
                   fontWeight="bold"
                   color={useColorModeValue('blue.600', 'blue.300')}
                 >
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatCurrency(item.price * item.quantity)}
                 </Text>
                 <IconButton
                   aria-label="Remove item"
@@ -166,6 +230,7 @@ const Cart: React.FC = () => {
                   colorScheme="red"
                   variant="ghost"
                   size="sm"
+                  isDisabled={updatingItemId === item.id}
                 />
               </VStack>
             </Grid>
@@ -173,6 +238,7 @@ const Cart: React.FC = () => {
         ))}
       </VStack>
 
+      {/* Order Summary Sidebar */}
       <Box
         bg={cardBg}
         borderRadius="lg"
@@ -189,36 +255,59 @@ const Cart: React.FC = () => {
       >
         <VStack spacing={6} align="stretch">
           <Text fontSize="2xl" fontWeight="bold">Order Summary</Text>
-          <Grid templateColumns="1fr auto" gap={4}>
-            <Text color="gray.500">Subtotal</Text>
-            <Text fontWeight="semibold">${cartTotal.toFixed(2)}</Text>
-            <Text color="gray.500">Shipping</Text>
-            <Text fontWeight="semibold">Free</Text>
-          </Grid>
+          
+          {/* Price Breakdown */}
+          <VStack spacing={3} align="stretch">
+            <HStack justify="space-between">
+              <Text color="gray.500">Subtotal</Text>
+              <Text fontWeight="semibold">{formatCurrency(cartTotal)}</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.500">Shipping</Text>
+              <Text fontWeight="semibold" color="green.500">Free</Text>
+            </HStack>
+            <HStack justify="space-between">
+              <Text color="gray.500">Tax</Text>
+              <Text fontWeight="semibold">{formatCurrency(0)}</Text>
+            </HStack>
+          </VStack>
+
+          {/* Total */}
           <Box pt={6} borderTopWidth={1} borderColor={borderColor}>
-            <Grid templateColumns="1fr auto" gap={4}>
+            <HStack justify="space-between">
               <Text fontSize="xl" fontWeight="bold">Total</Text>
               <Text
                 fontSize="xl"
                 fontWeight="bold"
                 color={useColorModeValue('blue.600', 'blue.300')}
               >
-                ${cartTotal.toFixed(2)}
+                {formatCurrency(cartTotal)}
               </Text>
-            </Grid>
+            </HStack>
           </Box>
+
+          {/* Checkout Button */}
           <Button
             colorScheme="blue"
             size="lg"
-            onClick={() => {
-              navigate('/payment');
-            }}
+            onClick={() => navigate('/payment')}
+            isLoading={cartLoading}
             _hover={{
               transform: 'translateY(-2px)',
               shadow: 'lg',
             }}
           >
             Proceed to Checkout
+          </Button>
+
+          {/* Continue Shopping Link */}
+          <Button
+            as={RouterLink}
+            to="/products"
+            variant="outline"
+            size="lg"
+          >
+            Continue Shopping
           </Button>
         </VStack>
       </Box>

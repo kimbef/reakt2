@@ -16,15 +16,19 @@ import {
   InputLeftElement,
   Tag,
   useColorModeValue,
-  Skeleton,
   Container,
   Heading,
+  Alert,
+  AlertIcon,
+  Spinner,
+  Center,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { SearchIcon, WarningIcon } from '@chakra-ui/icons';
 import { FaShoppingCart } from 'react-icons/fa';
 import { AppDispatch, RootState } from '../store';
 import { fetchProducts, Product } from '../store/slices/productsSlice';
 import { updateCart, selectCartItems } from '../store/slices/cartSlice';
+import { ProductSkeleton } from '../components/SkeletonLoaders';
 
 const Products: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -36,8 +40,18 @@ const Products: React.FC = () => {
   const { items: products, isLoading, error } = useSelector((state: RootState) => state.products);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const isLightMode = useColorModeValue(true, false);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -66,11 +80,22 @@ const Products: React.FC = () => {
       return;
     }
 
+    if (product.stock === 0) {
+      toast({
+        title: 'Out of Stock',
+        description: 'This product is currently out of stock',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const existingItem = cartItems.find(item => item.id === product.id);
     const updatedItems = existingItem
       ? cartItems.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: Math.min(item.quantity + 1, product.stock) }
             : item
         )
       : [...cartItems, { ...product, quantity: 1 }];
@@ -86,10 +111,10 @@ const Products: React.FC = () => {
           isClosable: true,
         });
       })
-      .catch(() => {
+      .catch((err) => {
         toast({
           title: 'Error',
-          description: 'Failed to add item to cart',
+          description: err instanceof Error ? err.message : 'Failed to add item to cart',
           status: 'error',
           duration: 3000,
           isClosable: true,
@@ -100,23 +125,16 @@ const Products: React.FC = () => {
   const categories = [...new Set(products.map(product => product.category))];
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+                         product.description.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesCategory = !selectedCategory || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  if (error) {
-    return (
-      <Box textAlign="center" py={10}>
-        <Text color="red.500" fontSize="xl">Error: {error}</Text>
-      </Box>
-    );
-  }
-
   return (
     <Box className="animated-gradient-bg" minH="100vh" pb={10}>
       <Container maxW="container.xl" pt={6}>
+        {/* Filters Section */}
         <Box 
           className={isLightMode ? "glass-effect" : "dark-glass-effect"}
           p={6} 
@@ -131,7 +149,7 @@ const Products: React.FC = () => {
                   <SearchIcon color="gray.400" />
                 </InputLeftElement>
                 <Input
-                  placeholder="Search products..."
+                  placeholder="Search products by name or description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   borderRadius="full"
@@ -156,123 +174,164 @@ const Products: React.FC = () => {
                 ))}
               </Select>
             </HStack>
+            <Text fontSize="sm" color="gray.500">
+              {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+            </Text>
           </VStack>
         </Box>
 
-        <Grid
-          templateColumns={{
-            base: 'repeat(1, 1fr)',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-            lg: 'repeat(4, 1fr)',
-            xl: 'repeat(5, 1fr)'
-          }}
-          gap={6}
-        >
-          {isLoading
-            ? Array(8).fill(0).map((_, i) => (
-                <Box
-                  key={i}
-                  className={isLightMode ? "glass-card" : "dark-glass-effect"}
-                  borderRadius="lg"
-                  overflow="hidden"
-                >
-                  <Skeleton height="200px" />
-                  <VStack p={4} spacing={3}>
-                    <Skeleton height="20px" width="80%" />
-                    <Skeleton height="20px" width="60%" />
-                    <Skeleton height="20px" width="40%" />
-                  </VStack>
-                </Box>
-              ))
-            : filteredProducts.map(product => (
-                <Box
-                  key={product.id}
-                  className={isLightMode ? "glass-card" : "dark-glass-effect"}
-                  borderRadius="lg"
-                  overflow="hidden"
-                  transition="all 0.3s"
-                  _hover={{
-                    transform: 'translateY(-4px) scale(1.02)',
+        {/* Error Alert */}
+        {error && (
+          <Alert status="error" mb={8} borderRadius="lg">
+            <AlertIcon />
+            <VStack align="start">
+              <Text fontWeight="bold">Failed to load products</Text>
+              <Text fontSize="sm">{error}</Text>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => dispatch(fetchProducts())}
+                mt={2}
+              >
+                Try Again
+              </Button>
+            </VStack>
+          </Alert>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <Box>
+            <ProductSkeleton count={8} />
+          </Box>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && filteredProducts.length === 0 && (
+          <Center py={20}>
+            <VStack spacing={4} textAlign="center">
+              <WarningIcon boxSize="64px" color="gray.400" />
+              <Heading size="lg">No Products Found</Heading>
+              <Text color="gray.600">
+                {debouncedSearch || selectedCategory
+                  ? 'Try adjusting your search filters'
+                  : 'No products available at the moment'}
+              </Text>
+              {(debouncedSearch || selectedCategory) && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setSelectedCategory('');
                   }}
                 >
-                  <Box position="relative">
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.name}
-                      height="200px"
-                      width="100%"
-                      objectFit="cover"
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      cursor="pointer"
-                      transition="all 0.5s"
-                      _hover={{ transform: 'scale(1.05)' }}
-                    />
-                    <Tag
-                      position="absolute"
-                      top={2}
-                      right={2}
-                      colorScheme={product.stock > 0 ? 'black' : 'red'}
-                      borderRadius="full"
-                      className={isLightMode ? "glass-effect" : "dark-glass-effect"}
-                    >
-                      {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
-                    </Tag>
-                  </Box>
-                  
-                  <VStack p={4} spacing={2} align="stretch">
-                    <Text
-                      fontSize="lg"
-                      fontWeight="semibold"
-                      noOfLines={1}
-                      cursor="pointer"
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      _hover={{ color: 'blue.500' }}
-                    >
-                      {product.name}
-                    </Text>
-                    <Text
-                      color={isLightMode ? "gray.700" : "gray.300"}
-                      fontSize="sm"
-                      noOfLines={2}
-                      height="40px"
-                    >
-                      {product.description}
-                    </Text>
-                    <HStack justify="space-between" align="center" pt={2}>
-                      <Text
-                        fontSize="xl"
-                        fontWeight="bold"
-                        color={useColorModeValue('blue.600', 'blue.300')}
-                      >
-                        ${product.price}
-                      </Text>
-                      
-                        
-                      <Button
-                        colorScheme="blue"
-                        size="sm"
-                        leftIcon={<FaShoppingCart />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddToCart(product);
-                        }}
-                        isDisabled={product.stock === 0}
-                        variant="outline"
-                        className="neon-button-blue"
-                        _hover={{
-                          bg: 'blue.500',
-                          color: 'white'
-                        }}
-                      >
-                        
-                      </Button>
-                      
-                    </HStack>
-                  </VStack>
+                  Clear Filters
+                </Button>
+              )}
+            </VStack>
+          </Center>
+        )}
+
+        {/* Products Grid */}
+        {!isLoading && !error && filteredProducts.length > 0 && (
+          <Grid
+            templateColumns={{
+              base: 'repeat(1, 1fr)',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(4, 1fr)',
+              xl: 'repeat(5, 1fr)'
+            }}
+            gap={6}
+          >
+            {filteredProducts.map(product => (
+              <Box
+                key={product.id}
+                className={isLightMode ? "glass-card" : "dark-glass-effect"}
+                borderRadius="lg"
+                overflow="hidden"
+                transition="all 0.3s"
+                _hover={{
+                  transform: 'translateY(-4px) scale(1.02)',
+                }}
+              >
+                <Box position="relative">
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    height="200px"
+                    width="100%"
+                    objectFit="cover"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    cursor="pointer"
+                    transition="all 0.5s"
+                    _hover={{ transform: 'scale(1.05)' }}
+                    loading="lazy"
+                  />
+                  <Tag
+                    position="absolute"
+                    top={2}
+                    right={2}
+                    colorScheme={product.stock > 0 ? 'green' : 'red'}
+                    borderRadius="full"
+                    className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+                  >
+                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock'}
+                  </Tag>
                 </Box>
-              ))}
-        </Grid>
+                
+                <VStack p={4} spacing={2} align="stretch">
+                  <Text
+                    fontSize="lg"
+                    fontWeight="semibold"
+                    noOfLines={1}
+                    cursor="pointer"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                    _hover={{ color: 'blue.500' }}
+                  >
+                    {product.name}
+                  </Text>
+                  <Text
+                    color={isLightMode ? "gray.700" : "gray.300"}
+                    fontSize="sm"
+                    noOfLines={2}
+                    height="40px"
+                  >
+                    {product.description}
+                  </Text>
+                  <HStack justify="space-between" align="center" pt={2}>
+                    <Text
+                      fontSize="xl"
+                      fontWeight="bold"
+                      color={useColorModeValue('blue.600', 'blue.300')}
+                    >
+                      ${product.price.toFixed(2)}
+                    </Text>
+                      
+                    <Button
+                      colorScheme="blue"
+                      size="sm"
+                      leftIcon={<FaShoppingCart />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                      }}
+                      isDisabled={product.stock === 0}
+                      variant="outline"
+                      className="neon-button-blue"
+                      _hover={{
+                        bg: 'blue.500',
+                        color: 'white'
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </HStack>
+                </VStack>
+              </Box>
+            ))}
+          </Grid>
+        )}
       </Container>
     </Box>
   );
