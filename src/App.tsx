@@ -120,7 +120,8 @@ const AppContent = () => {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Layout>
+      </Layout>
+    </ErrorBoundary>
   );
 };
 

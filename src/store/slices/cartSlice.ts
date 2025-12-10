@@ -69,7 +69,6 @@ export const updateCart = createAsyncThunk(
       const message = error instanceof Error ? error.message : 'Failed to update cart';
       return rejectWithValue(message);
     }
-    }
   }
 );
 
