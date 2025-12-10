@@ -16,7 +16,7 @@ import {
   AlertIcon,
   Spinner,
 } from '@chakra-ui/react';
-import { AddIcon, MinusIcon, DeleteIcon, WarningIcon } from '@chakra-ui/icons';
+import { AddIcon, MinusIcon, DeleteIcon } from '@chakra-ui/icons';
 import { RootState, AppDispatch } from '../store';
 import { selectCartItems, selectCartTotal, updateCart } from '../store/slices/cartSlice';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';

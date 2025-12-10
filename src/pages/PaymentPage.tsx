@@ -39,7 +39,6 @@ import Footer from '../components/Footer';
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const toast = useToast();
   const cartTotal = useSelector(selectCartTotal);
@@ -61,7 +60,7 @@ const PaymentPage: React.FC = () => {
       cvv: '',
     },
     validationSchema: paymentSchema,
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       if (!user) {
         toast({
           title: 'Authentication Required',

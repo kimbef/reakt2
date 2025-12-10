@@ -20,7 +20,6 @@ import {
   Heading,
   Alert,
   AlertIcon,
-  Spinner,
   Center,
 } from '@chakra-ui/react';
 import { SearchIcon, WarningIcon } from '@chakra-ui/icons';
