@@ -19,7 +19,7 @@ import {
   Card,
   CardBody,
 } from '@chakra-ui/react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { purchaseProduct } from '../store/slices/productsSlice';
 import { AppDispatch, RootState } from '../store';
