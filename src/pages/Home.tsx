@@ -11,7 +11,6 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import { AppDispatch, RootState } from '../store';
 import { fetchProducts } from '../store/slices/productsSlice';
@@ -26,7 +25,6 @@ const Home: React.FC = () => {
   }, [dispatch]);
 
   const featuredProducts = products.slice(0, 4);
-  const isLightMode = useColorModeValue(true, false);
 
   const categories = [
     {
