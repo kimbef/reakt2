@@ -9,5 +9,17 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@chakra-ui/react'],
+          state: ['redux', '@reduxjs/toolkit', 'react-redux'],
+          firebase: ['firebase'],
+          forms: ['formik', 'yup'],
+        },
+      },
+    },
   },
 }); 

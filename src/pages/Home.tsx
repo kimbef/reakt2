@@ -56,33 +56,47 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <Box
         className="animated-gradient-bg"
-        py={20}
+        py={{ base: 16, md: 24 }}
         px={4}
-        
+        position="relative"
+        overflow="hidden"
       >
         <Box
-          className={isLightMode ? "hero-glass-effect" : "dark-hero-glass-effect"}
-          borderRadius="lg"
+          className="glass-effect"
+          borderRadius="0"
           m={{ base: 4, md: 8 }}
-          p={8}
+          p={{ base: 8, md: 16 }}
           textAlign="center"
+          position="relative"
+          zIndex={1}
         >
           <Container maxW="container.xl">
-            <VStack spacing={6}>
-              <Heading size="2xl" className="hero-gradient-text">
-                Welcome to ReaktShop
+            <VStack spacing={8}>
+              <Heading 
+                size="2xl" 
+                className="animate-fade-in-up hero-title"
+                fontSize={{ base: "3rem", md: "5rem", lg: "6rem" }}
+                fontWeight="800"
+              >
+                ReaktShop
               </Heading>
-              <Text fontSize="xl" maxW="container.md" className="hero-gradient-text">
-                Discover amazing products at great prices. Shop now and enjoy exclusive deals!
+              <Text 
+                fontSize={{ base: "lg", md: "xl" }} 
+                maxW="container.md" 
+                className="animate-fade-in-up stagger-2 hero-subtitle"
+              >
+                Discover extraordinary products crafted with precision and style.
               </Text>
               <Button
-                colorScheme="blue"
                 size="lg"
                 onClick={() => navigate('/products')}
-                className="neon-button-blue glass-effect"
-                _hover={{ transform: 'scale(1.05)' }}
+                className="neon-button-blue animate-fade-in-up stagger-3"
+                px={10}
+                py={6}
+                fontSize="lg"
+                fontWeight="600"
               >
-                Shop Now
+                Browse Products
               </Button>
             </VStack>
           </Container>
@@ -90,41 +104,57 @@ const Home: React.FC = () => {
       </Box>
 
       {/* Featured Products */}
-      <Container maxW="container.xl" py={16}>
+      <Container maxW="container.xl" py={20}>
         <Box 
-          className={isLightMode ? "glass-effect" : "dark-glass-effect"}
-          p={6}
-          borderRadius="lg"
+          className="glass-effect"
+          p={{ base: 6, md: 10 }}
         >
-          <Heading size="xl" mb={8}>Featured Products</Heading>
+          <Heading 
+            size="xl" 
+            mb={10}
+            className="text-gradient"
+            fontWeight="700"
+          >
+            Featured Products
+          </Heading>
           {isLoading ? (
             <Text>Loading products...</Text>
           ) : (
             <Grid
               templateColumns={['repeat(1, 1fr)', 'repeat(2, 1fr)', 'repeat(4, 1fr)']}
-              gap={6}
+              gap={8}
             >
-              {featuredProducts.map(product => (
+              {featuredProducts.map((product, index) => (
                 <Box
                   key={product.id}
-                  className={isLightMode ? "glass-card" : "dark-glass-card"}
-                  borderRadius="lg"
+                  className="glass-card slide-up"
                   overflow="hidden"
                   cursor="pointer"
                   onClick={() => navigate(`/product/${product.id}`)}
+                  style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
                   <Image
                     src={product.imageUrl}
                     alt={product.name}
-                    height="200px"
+                    height="220px"
                     width="100%"
                     objectFit="cover"
+                    transition="all 0.5s ease"
+                    _hover={{ transform: "scale(1.05)" }}
                   />
-                  <Box p={4}>
-                    <Text fontSize="xl" fontWeight="semibold" mb={2}>
+                  <Box p={5}>
+                    <Text 
+                      fontSize="lg" 
+                      fontWeight="600" 
+                      mb={2}
+                    >
                       {product.name}
                     </Text>
-                    <Text color="blue.600" fontSize="lg" fontWeight="bold">
+                    <Text 
+                      className="text-gradient"
+                      fontSize="xl" 
+                      fontWeight="bold"
+                    >
                       ${product.price}
                     </Text>
                   </Box>
@@ -136,32 +166,35 @@ const Home: React.FC = () => {
       </Container>
 
       {/* Categories */}
-      <Box py={16}>
+      <Box py={20}>
         <Container maxW="container.xl">
           <VStack spacing={12}>
-            <Box width="100%" className={isLightMode ? "glass-effect" : "dark-glass-effect"} p={6} borderRadius="lg">
+            <Box width="100%" className="glass-effect" p={{ base: 6, md: 10 }}>
               <Heading
                 textAlign="center"
-                mb={8}
+                mb={10}
                 size="xl"
+                className="text-gradient"
+                fontWeight="700"
               >
                 Shop by Category
               </Heading>
               <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8}>
-                {categories.map((category) => (
+                {categories.map((category, index) => (
                   <Box
                     key={category.name}
                     cursor="pointer"
                     onClick={() => handleCategoryClick(category.name)}
-                    transition="all 0.3s"
-                    _hover={{ transform: 'translateY(-4px) scale(1.03)' }}
+                    className="slide-up"
+                    style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+                    transition="all 0.6s cubic-bezier(0.16, 1, 0.3, 1)"
+                    _hover={{ transform: 'translateY(-8px)' }}
                   >
                     <Box
-                      borderRadius="lg"
                       overflow="hidden"
-                      className={isLightMode ? "glass-card" : "dark-glass-card"}
+                      className="glass-card"
                       position="relative"
-                      height="200px"
+                      height="240px"
                     >
                       <Image
                         src={category.image}
@@ -169,19 +202,22 @@ const Home: React.FC = () => {
                         width="100%"
                         height="100%"
                         objectFit="cover"
+                        transition="all 0.5s ease"
+                        _hover={{ transform: "scale(1.08)" }}
                       />
                       <Box
                         position="absolute"
                         bottom={0}
                         left={0}
                         right={0}
-                        className={isLightMode ? "glass-effect" : "dark-glass-effect"}
+                        bg="var(--glass-bg)"
+                        backdropFilter="blur(10px)"
                         p={4}
+                        borderTop="1px solid var(--glass-border)"
                       >
                         <Text
-                          color={isLightMode ? "black" : "white"}
                           fontSize="lg"
-                          fontWeight="bold"
+                          fontWeight="600"
                           textAlign="center"
                         >
                           {category.name}
